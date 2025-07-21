@@ -10,7 +10,7 @@
                 <div class="card-body">
                     {% comment %} <h3 class="card-title">{{ post.title }}</h3> {% endcomment %}
                     <h3 class="card-title"><a href="/post/{{post.slug}}">{{ post.title }}</a></h3>
-                    <p class="card-text">{{ post.body }}</p>
+                    <p class="card-text">{{ post.body | safe }}</p>
                     <p class="card-text"><small class="text-muted">發布於(使用模板) {{ post.pub_date }}</small></p>
                 </div>
             </div>
