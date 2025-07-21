@@ -15,9 +15,10 @@
         {% for post in posts %}
             <div class="card mb-3">
                 <div class="card-body">
-                    <h3 class="card-title">{{ post.title }}</h3>
+                    {% comment %} <h3 class="card-title">{{ post.title }}</h3> {% endcomment %}
+                    <h3 class="card-title"><a href="/post/{{post.slug}}">{{ post.title }}</a></h3>
                     <p class="card-text">{{ post.body }}</p>
-                    <p class="card-text"><small class="text-muted">發布於 {{ post.created_at }}</small></p>
+                    <p class="card-text"><small class="text-muted">發布於 {{ post.pub_date }}</small></p>
                 </div>
             </div>
         {% empty %}

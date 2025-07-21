@@ -14,3 +14,8 @@ def homepage(request):
     
     # return render(request, 'homepage.html', {'posts': Post.objects.all()})
     return render(request, 'index.html', locals())
+
+def showpost(request, slug):
+    post = Post.objects.get(slug=slug) #(欄位名稱=傳進來的變數值)
+    return render(request, 'post.html', locals())
+
