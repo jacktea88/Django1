@@ -10,8 +10,8 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="display-4">歡迎來到部落格</h1>
-        <p class="lead">這是首頁，您可以在這裡查看最新的文章。</p>
+        {% include "header.html" %}
+        {% comment %} {% block headmsg1 %}{% endblock  %} {% endcomment %}
         
         <h2 class="mt-4">最新文章</h2>
 
