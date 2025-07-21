@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load markdown_extras %}
+
 {% block title %}部落格首頁模板{% endblock %}
 
 {% block headmsg %}歡迎來到部落格-使用模板{% endblock %}
@@ -10,7 +12,7 @@
                 <div class="card-body">
                     {% comment %} <h3 class="card-title">{{ post.title }}</h3> {% endcomment %}
                     <h3 class="card-title"><a href="/post/{{post.slug}}">{{ post.title }}</a></h3>
-                    <p class="card-text">{{ post.body | safe }}</p>
+                    <p class="card-text">{{ post.body | convert_markdown | safe }}</p>
                     <p class="card-text"><small class="text-muted">發布於(使用模板) {{ post.pub_date }}</small></p>
                 </div>
             </div>
