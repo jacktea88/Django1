@@ -8,7 +8,7 @@ def homepage(request):
     post_list = list()
     for count, post in enumerate(posts):
         post_list.append(f"Post {count}: {post} <br> {post.body} <br>")
-        print(post)
+        # print(post)
     # return HttpResponse("Hello World!")
     # return HttpResponse(post_list)
     
