@@ -19,6 +19,20 @@
         {% empty %}
             <p class="text-muted">目前沒有文章。</p>
         {% endfor %}
+<hr><hr><hr>
+
+                {% for poem in poems %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    {% comment %} <h3 class="card-title">{{ post.title }}</h3> {% endcomment %}
+                    <h3 class="card-title"><a href="/post/{{post.slug}}">{{ poem.title_author }}</a></h3>
+                    <p class="card-text">{{ poem.content | convert_markdown | safe }}</p>
+                    <p class="card-text"><small class="text-muted">發布於(使用模板) {{ post.pub_date }}</small></p>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-muted">目前沒有文章。</p>
+        {% endfor %}
 
 {% endblock %}
 
