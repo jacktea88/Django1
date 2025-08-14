@@ -1,8 +1,11 @@
 from django.contrib import admin
-from mysite.models import Post
+from mysite.models import Post, Product, NewTable
 
 # Register your models here.
 # admin.site.register(Post)
+
+admin.site.register(Product)
+admin.site.register(NewTable)
 
 class PostAdmin(admin.ModelAdmin):
     list_display = ('title', 'slug', 'pub_date', 'body', )
