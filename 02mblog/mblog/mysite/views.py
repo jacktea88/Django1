@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from mysite.models import Post
+from mysite.models import Post, Product
 
 # Create your views here.
 def homepage(request):
@@ -32,4 +32,8 @@ def homepage(request):
 def showpost(request, slug):
     post = Post.objects.get(slug=slug) #(欄位名稱=傳進來的變數值)
     return render(request, 'post.html', locals())
+
+def listing(request):
+    products = Product.objects.all()
+    return render(request, 'listing.html', locals())
 
