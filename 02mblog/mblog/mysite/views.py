@@ -62,3 +62,6 @@ def listing2(request):
     # html = html.replace("{tags}", tags)
     return HttpResponse(html)
 
+
+def about(request):
+    return render(request, 'about.html', locals())

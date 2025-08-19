@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from mysite.views import homepage, showpost, listing, listing2
+from mysite.views import homepage, showpost, listing, listing2, about
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,4 +24,6 @@ urlpatterns = [
     path('post/<slug:slug>/', showpost, name='showpost'),
     # path('list/', listing, name='listing'),
     path('list/', listing2, name='listing'),
+    path('about/', about, name='about'),
+
 ]
