@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotFound, Http404
 from mysite.models import Post, Product
 
 # Create your views here.
@@ -131,3 +131,12 @@ def about3(request):
     
     '''
     return HttpResponse(html)
+
+def disp_detail(request, id):
+    try :
+        product = Product.objects.get(id=id)
+        print(product)
+    except Product.DoesNotExist:
+        # raise Http404("找不到商品")
+        return HttpResponseNotFound('找不到商品')
+    return render(request, 'disp.html', locals())
