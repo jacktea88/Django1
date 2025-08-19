@@ -33,7 +33,32 @@ def showpost(request, slug):
     post = Post.objects.get(slug=slug) #(欄位名稱=傳進來的變數值)
     return render(request, 'post.html', locals())
 
+
 def listing(request):
     products = Product.objects.all()
     return render(request, 'listing.html', locals())
+
+def listing2(request):
+    html = '''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>list products</title>
+</head>
+<body>
+    <table class="table table-bordered" bgcolor="lightblue" border="1">
+        {}
+    </table>
+</body>
+</html>
+'''
+    products = Product.objects.all()
+    tags = "<tr><td>name</td><td>price</td><td>qty</td></tr>"
+    for product in products:
+        tags += f"<tr><td>{product.name}</td><td>{product.price}</td><td>{product.qty}</td></tr>"
+    html = html.format(tags)
+    # html = html.replace("{tags}", tags)
+    return HttpResponse(html)
 
