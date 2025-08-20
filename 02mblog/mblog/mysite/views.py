@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from mysite.models import Post, Product
+from django.urls import reverse
+
 
 # Create your views here.
 def homepage(request):
@@ -146,5 +148,12 @@ def about_author(request, author_id=0):
     return render(request, 'about_author.html', locals())
     # return HttpResponse(html)
 
-def showpost_date(request, post_date):
-    return HttpResponse(f'Here is the post for {post_date}')
+def showpost_date(request, yr, mo, day):
+    print(yr, mo, day)
+    yr = 2001
+    mo = 1
+    day = 1
+    
+    html = '<a href="{}">Back</a>'.format(reverse('post_url', args=[yr, mo, day]))
+    # return HttpResponse(html)
+    return render(request, 'post_date.html', locals())

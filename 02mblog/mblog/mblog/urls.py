@@ -29,14 +29,15 @@ about_patterns = [
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', homepage, name='homepage'),
-    path('post/<slug:slug>/', showpost, name='showpost'),
-    path('post/114年/<path:post_date>/', showpost_date, name='showpost_date'),
-    path('post/<path:post_date>/', showpost_date, name='showpost_date'),
+    # path('post/<slug:slug>/', showpost, name='showpost'),
+    # path('post/114年/<path:post_date>/', showpost_date, name='showpost_date'),
+    # path('post/<path:post_date>/', showpost_date, name='showpost_date'),
     path('list/', listing, name='listing'),
     path('list/<str:id>/', disp_detail, name='listing'),
     # path('list/', listing2, name='listing'),
     # path('about/', about, name='about'),
     path('author/', include(about_patterns)),
+    path('post/<int:yr>/<int:mo>/<int:day>/', showpost_date, name='post_url'),
 
 
 
