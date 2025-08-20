@@ -28,10 +28,11 @@ urlpatterns = [
     path('list/', listing, name='listing'),
     path('list/<str:id>/', disp_detail, name='listing'),
     # path('list/', listing2, name='listing'),
-    path('about/', about, name='about'),
+    # path('about/', about, name='about'),
     path('about2/', about2, name='about2'),
     path('about3/', about3, name='about2'),
     path('about/<int:author_id>/', about_author, name='about_author'),
+    path('about/', about_author, name='about_author'),
 
 
 ]
