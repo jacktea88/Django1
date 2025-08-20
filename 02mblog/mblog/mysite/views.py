@@ -146,3 +146,5 @@ def about_author(request, author_id):
     return render(request, 'about_author.html', locals())
     # return HttpResponse(html)
 
+def showpost_date(request, post_date):
+    return HttpResponse(f'Here is the post for {post_date}')

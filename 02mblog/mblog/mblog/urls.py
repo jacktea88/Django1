@@ -16,12 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from mysite.views import homepage, showpost, listing, listing2, about, about2, about3, disp_detail, about_author
+from mysite.views import homepage, showpost, listing, listing2
+from mysite.views import showpost_date, about, about2, about3, disp_detail, about_author
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', homepage, name='homepage'),
     path('post/<slug:slug>/', showpost, name='showpost'),
+    path('post/114年/<path:post_date>/', showpost_date, name='showpost_date'),
+    path('post/<path:post_date>/', showpost_date, name='showpost_date'),
     path('list/', listing, name='listing'),
     path('list/<str:id>/', disp_detail, name='listing'),
     # path('list/', listing2, name='listing'),
