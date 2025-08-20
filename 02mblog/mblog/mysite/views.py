@@ -140,3 +140,9 @@ def disp_detail(request, id):
         # raise Http404("找不到商品")
         return HttpResponseNotFound('找不到商品')
     return render(request, 'disp.html', locals())
+
+def about_author(request, author_id):
+    html = f'Here is the about page for author {author_id}'
+    return render(request, 'about_author.html', locals())
+    # return HttpResponse(html)
+
