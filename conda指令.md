@@ -1,6 +1,7 @@
 指令	說明
 conda env list 或 conda info --envs	列出所有已安裝的環境。
 conda create --name <env_name>	建立一個新的環境，不指定 Python 版本。
+例：conda create --name 12mshop python
 conda create --name <env_name> python=<version>	建立一個指定 Python 版本的環境。
 conda activate <env_name>	啟用指定的環境。
 conda deactivate	關閉目前的環境。

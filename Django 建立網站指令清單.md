@@ -20,9 +20,19 @@ pip install django==4.2
 ```
 
 ## 3. 建立專案
+### 建立專案資料夾
 
 ``` bash
-django-admin startproject mysite
+md 12mshop
+cd 12mshop
+django-admin startproject mshop
+``` 
+
+### 建立app 注意在settings.py中要註冊app
+
+``` bash
+cd mshop
+python manage.py startapp mysite
 ```
 
 ## 4. 啟動開發伺服器
