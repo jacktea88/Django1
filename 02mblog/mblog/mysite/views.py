@@ -1,3 +1,4 @@
+
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from mysite.models import Post, Product
@@ -25,7 +26,11 @@ def homepage(request):
         {'content': '君不見黃河之水天上來，奔流到海不復回。君不見高堂明鏡悲白髮，早生華髮人生幾何。', 'title_author': '李白 -將進酒'},
         {'content': '床前明月光，疑是地上霜。舉頭望明月，低頭思故鄉。', 'title_author': '李白 -靜夜思'},
     ]
-    # return HttpResponse("Hello World!")
+    import random
+    today_poem = random.choice(poems)
+    print(today_poem)
+    #
+    #  return HttpResponse("Hello World!")
     # return HttpResponse(post_list)
     
     # return render(request, 'homepage.html', {'posts': Post.objects.all()})

@@ -34,6 +34,10 @@
             <p class="text-muted">目前沒有文章。</p>
         {% endfor %}
 
+        <br>
+        今日佳句:{{today_poem.title_author}} {{today_poem.content}}
+        <br>
+        現在時間： {% now "Y-m-d H:i:s" %}
 {% endblock %}
 
     </div>
