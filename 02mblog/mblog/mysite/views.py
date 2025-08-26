@@ -1,6 +1,6 @@
 
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseNotFound, Http404
+from django.http import HttpResponse, HttpResponseNotFound, Http404, JsonResponse
 from mysite.models import Post, Product
 from django.urls import reverse
 
@@ -150,7 +150,10 @@ def disp_detail(request, id):
 
 def about_author(request, author_id=0):
     html = f'Here is the about page for author {author_id}'
-    return render(request, 'about_author.html', locals())
+    print('path name url:', reverse('about_author'))
+    print('path name url + args:', reverse('about_author', args=[author_id]))
+    return JsonResponse({'message': html}, status=200)
+    # return render(request, 'about_author.html', locals())
     # return HttpResponse(html)
 
 def showpost_date(request, yr, mo, day):
