@@ -150,9 +150,7 @@ REVIEWS_DATA = [
 **要求：**
 1. 遵循RESTful設計原則
 2. 使用HTTP方法區分操作
-3. 實現版本控制
-4. 加入API認證考量
-5. 建立API文件結構
+
 
 **預期API結構：**
 ```
@@ -164,6 +162,20 @@ DELETE /api/v1/books/1/            -> 刪除書籍
 GET    /api/v1/books/1/reviews/    -> 書籍評論列表
 POST   /api/v1/books/1/reviews/    -> 新增評論
 ```
+**檔案結構:**
+```
+bookstore/
+├── bookstore/
+│   ├── __init__.py
+│   ├── settings.py
+│   ├── urls.py          # 主要URL配置
+│   └── wsgi.py
+├── api/
+│   ├── __init__.py
+│   ├── views.py         # API視圖函數
+│   └── urls.py          # API URL配置
+└── manage.py
+```
 
 **完成標準：**
 - [ ] RESTful URL設計
@@ -172,12 +184,6 @@ POST   /api/v1/books/1/reviews/    -> 新增評論
 
 
 ---
-
-
-
-
-
-
 
 ## 參考資源
 

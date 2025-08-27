@@ -27,4 +27,6 @@ urlpatterns = [
     path('category/<str:category_name>/', books_by_category, name='category'),
     # 作者頁面 - 使用slug轉換器
     path('author/<slug:author_slug>/', books_by_author, name='author'),
+    # API端點 - 直接包含，不使用版本控制
+    path('api/', include('api.urls')),    
 ]
