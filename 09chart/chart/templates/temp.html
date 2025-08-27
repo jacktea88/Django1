@@ -1,0 +1,38 @@
+<!-- plotly.html (dj4ch09 project) -->
+{% extends "base.html" %}
+{% block title %}temp from MQTT{% endblock %}
+{% block content %}
+<div class='container'>
+{% for message in messages %}
+    <div class='alert alert-{{message.tags}}'>{{ message }}</div>
+{% endfor %}
+    <div class='row'>
+        <div class='col-md-12'>
+            <h3 class="alert alert-primary">temp from MQTT chart</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6" width="100%">
+            {% autoescape off %}
+            {{ temp_div }}
+            {% endautoescape %}
+        </div>
+        <div class="col-md-6">
+            <table class="table table-striped table-sm">
+                <tr>
+                    <td>ID</td>
+                    <td>溫度</td>
+                    <td>接收時間</td>
+                </tr>
+                {% for d in data %}
+                <tr>
+                    <td>{{ d.id }}</td>
+                    <td>{{ d.temperature }}</td>
+                    <td>{{ d.created_at }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
