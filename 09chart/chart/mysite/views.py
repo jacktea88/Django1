@@ -26,7 +26,7 @@ def plotly(request):
 
 # 使用ploty來繪製溫度圖表
 def plotly_mqtt(request):
-    data = Temperature.objects.all().order_by('-id')[:10]
+    data = Temperature.objects.all().order_by('-id')[:20]
     x = [d.created_at for d in data]
     y = [d.temperature for d in data]
     trace = go.Scatter(x=x, y=y, name='溫度', mode='lines+markers')
@@ -58,7 +58,7 @@ def plotly_api(request):
     temp.save()
     print('溫度數據已儲存到資料庫')
 
-    return HttpResponse('OK')
+    return HttpResponse(temperature)
     return render(request, 'mqtt.html', locals())
 
 def mqtt_show(request):

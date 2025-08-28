@@ -12,6 +12,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/4.3.7/mqtt.min.js"></script>
     <!-- Chart.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <!-- jQuery uncompressed version -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
     <style>
         .card {
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
@@ -517,15 +520,34 @@
             updateChart();
 
             // Send temperature data to backend
-            sendTemperatureToBackend(temperature);
+            // sendTemperatureToBackend(temperature);
+
+            // Send temperature data to backend using jQuery
+            sendTemperatureToBackendJquery(temperature);
         }
 
-        //增加一個js function 來透過http post 將溫度數據傳到後端
+        //增加一個js function 來透過AJAX將溫度數據傳到後端
         function sendTemperatureToBackend(temperature) {
             const xhr = new XMLHttpRequest();
             xhr.open('POST', '/api/temperature/');
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send(JSON.stringify({temperature: temperature}));
+        }
+        //增加一個jquery function 來透過AJAX將溫度數據傳到後端
+        function sendTemperatureToBackendJquery(temperature) {
+            $.ajax({
+                url: '/api/temperature/',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({temperature: temperature}),
+                success: function(response) {
+
+                    addLog('溫度數據' + response + '已儲存到資料庫');
+                },
+                error: function(xhr, status, error) {
+                    addLog('儲存溫度數據到資料庫失敗:', error);
+                }
+            });
         }
         // Update statistics
         function updateStatistics() {
