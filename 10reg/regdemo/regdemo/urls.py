@@ -16,5 +16,6 @@ urlpatterns = [
     path('logout/', views.logout),
     path('userinfo/', views.userinfo),
     path('post/', views.posting),
-    path('accounts/', include('registration.backends.default.urls')),
+    # path('accounts/', include('registration.backends.default.urls')),
+    path('accounts/', include('allauth.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

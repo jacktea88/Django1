@@ -37,8 +37,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'mysite',
-    'registration',
+    # 'mysite',
+    # 'registration',
+    'mysite.apps.MysiteConfig',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.line',
+    # 'allauth.socialaccount.providers.kakao',
+    # 'allauth.socialaccount.providers.naver',
+    # 'allauth.socialaccount.providers.oauth2',
+    # 'allauth.socialaccount.providers.oauth',
+    # 'allauth.socialaccount.providers.openid',
 ]
 
 MIDDLEWARE = [
@@ -49,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'regdemo.urls'
@@ -105,6 +119,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
 LANGUAGE_CODE = 'zh-hant'
+# LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Asia/Taipei'
 
@@ -134,6 +149,24 @@ EMAIL_HOST_USER = "jacktea@gmail.com"
 EMAIL_HOST_PASSWORD = "plci gghb kakh weww"
 # django-10reg:plci gghb kakh weww 
 ACCOUNT_ACTIVATION_DAYS = 7
+
+# django-allauth
+SITE_ID = 1
+LOGIN_REDIRECT_URL = '/'
+
+# https://django-allauth.readthedocs.io/en/latest/configuration.html
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+
+
+
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
