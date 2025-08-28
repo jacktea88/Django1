@@ -52,7 +52,7 @@ def logout(request):
     return redirect('/')
 
 
-@login_required(login_url='/login/')
+@login_required(login_url='/login/') #如果用戶尚未登入，則會被重定向到指定的登入頁面（在這裡是/login/）。
 def userinfo(request):
     if request.user.is_authenticated:
         username = request.user.username
