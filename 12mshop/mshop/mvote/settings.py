@@ -83,7 +83,7 @@ TEMPLATES = [
         },
     },
 ]
-
+# print('TEMPLATES[0]["DIRS"]',BASE_DIR, TEMPLATES[0]['DIRS'])
 WSGI_APPLICATION = 'mvote.wsgi.application'
 
 
@@ -96,7 +96,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
+# print('DATABASES=', DATABASES)
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -135,9 +135,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'mysite/static'),    # need modify
+    os.path.join(BASE_DIR, 'mysite', 'static'),    # need modify
+    # BASE_DIR / 'mysite' / 'static'    # need modify
 ]
-
+# print('STATICFILES=', STATICFILES_DIRS)
 STATIC_ROOT = '/home/StarkLin/mvote/staticfiles/'
 
 # Default primary key field type
@@ -190,8 +191,8 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, '/media')
-
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# print('MEDIA_ROOT=', MEDIA_ROOT)
 
 # django-filer config
 THUMBNAIL_HIGH_RESOLUTION = True
@@ -203,12 +204,13 @@ THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.filters',
 )
 
+# https://django-filer.readthedocs.io/en/latest/settings.html
 FILER_STORAGES = {
     'public': {
         'main': {
             'ENGINE': 'filer.storage.PublicFileSystemStorage',
             'OPTIONS': {
-                'location': os.path.join(BASE_DIR, '/media/filer'),
+                'location': os.path.join(BASE_DIR, 'media', 'filer'),
                 'base_url': '/media/filer/',
             },
             'UPLOAD_TO': 'filer.utils.generate_filename.randomized',
@@ -217,7 +219,7 @@ FILER_STORAGES = {
         'thumbnails': {
             'ENGINE': 'filer.storage.PublicFileSystemStorage',
             'OPTIONS': {
-                'location': os.path.join(BASE_DIR, '/media/filer_thumbnails'),
+                'location': os.path.join(BASE_DIR, 'media', 'filer_thumbnails'),
                 'base_url': '/media/filer_thumbnails/',
             },
         },
@@ -226,7 +228,7 @@ FILER_STORAGES = {
         'main': {
             'ENGINE': 'filer.storage.PrivateFileSystemStorage',
             'OPTIONS': {
-                'location':  os.path.join(BASE_DIR, '/smedia/filer'),
+                'location':  os.path.join(BASE_DIR, 'smedia', 'filer'),
                 'base_url': '/smedia/filer/',
             },
             'UPLOAD_TO': 'filer.utils.generate_filename.randomized',
@@ -235,13 +237,13 @@ FILER_STORAGES = {
         'thumbnails': {
             'ENGINE': 'filer.storage.PrivateFileSystemStorage',
             'OPTIONS': {
-                'location':  os.path.join(BASE_DIR, '/smedia/filer_thumbnails'),
+                'location':  os.path.join(BASE_DIR, 'smedia', 'filer_thumbnails'),
                 'base_url': '/smedia/filer_thumbnails/',
             },
         },
     },
 }
-
+# print('file folder=', FILER_STORAGES)
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 CART_SESSION_ID = 'cart'

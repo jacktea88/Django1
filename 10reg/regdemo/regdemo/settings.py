@@ -82,7 +82,7 @@ TEMPLATES = [
         },
     },
 ]
-
+# print(BASE_DIR, TEMPLATES[0]['DIRS'])
 WSGI_APPLICATION = 'regdemo.wsgi.application'
 
 
