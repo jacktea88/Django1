@@ -153,7 +153,7 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-ACCOUNT_DEFAULT_HTTP_PROTOCOL='https'
+ACCOUNT_DEFAULT_HTTP_PROTOCOL='http'    # 注意localhost 操作google登入時無改成無加密，開發server狀態不支援，default is https
 
 SOCIALACCOUNT_PROVIDERS = {
     'facebook': {
