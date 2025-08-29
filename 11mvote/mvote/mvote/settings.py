@@ -55,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'mvote.urls'
@@ -126,9 +127,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    # os.path.join(BASE_DIR, 'static'),
+    BASE_DIR / 'mysite/static'
 ]
-
+# print('STATICFILES_DIR=', STATICFILES_DIRS)
 STATIC_ROOT = '/home/StarkLin/mvote/staticfiles/'
 
 # Default primary key field type
@@ -141,9 +143,9 @@ LOGIN_REDIRECT_URL = '/'
 SOCIALACCOUNT_AUTO_SIGNUP = True
 
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.mailgun.org'
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'jacktea@gmail.com'
+EMAIL_HOST_PASSWORD = 'plci gghb kakh weww'
 EMAIL_PORT = 587
 
 AUTHENTICATION_BACKENDS = [
