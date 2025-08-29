@@ -11,16 +11,16 @@ from mysite import models
 # Create your views here.
 
 def index(request):
-    all_polls = models.Poll.objects.all().order_by('-created_at')
-    paginator = Paginator(all_polls, 5)
+    all_products = models.Product.objects.all()
+    paginator = Paginator(all_products, 5)
     p = request.GET.get('p')
 
     try:
-        polls = paginator.page(p)
+        products = paginator.page(p)
     except PageNotAnInteger:
-        polls = paginator.page(1)
+        products = paginator.page(1)
     except EmptyPage:
-        polls = paginator.page(paginator.num_pages)
+        products = paginator.page(paginator.num_pages)
 
     return render(request, 'index.html', locals())
 

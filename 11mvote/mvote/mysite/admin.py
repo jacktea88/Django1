@@ -9,6 +9,12 @@ class PollItemAdmin(admin.ModelAdmin):
     list_display = ('poll', 'name', 'vote', 'image_url')
     ordering = ('poll',)
 
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('category', 'sku', 'name', 'stock', 'price')
+    ordering = ('category',)
+
 admin.site.register(models.Poll, PollAdmin)
 admin.site.register(models.PollItem, PollItemAdmin)
 admin.site.register(models.VoteCheck)
+admin.site.register(models.Product, ProductAdmin)
+admin.site.register(models.Category)

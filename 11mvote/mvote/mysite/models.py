@@ -23,3 +23,23 @@ class VoteCheck(models.Model):
     userid = models.PositiveIntegerField()
     pollid = models.PositiveIntegerField()
     vote_date = models.DateField()
+
+class Category(models.Model):
+    name = models.CharField( max_length=200)
+
+    def __str__(self):
+        return self.name
+    
+class Product(models.Model):
+    category = models.ForeignKey( Category, on_delete=models.CASCADE)
+    sku = models.CharField( max_length=50)
+    name = models.CharField( max_length=50)
+    description = models.TextField()
+    image = models.URLField(max_length=200, null=True)
+    website = models.URLField(max_length=200, null=True)
+    stock = models.PositiveIntegerField(default=0)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    def __str__(self):
+        return self.name
+
