@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.urls import path, include
 from mysite import views
 from django.views.generic import TemplateView
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,9 +26,9 @@ urlpatterns = [
     path('', views.index),
     path('<int:id>/', views.index),
     path('product/<int:id>/', views.index, name='product-url'),
-    path('poll/<int:pollid>', views.poll, name='poll-url'),
-    path('vote/<int:pollid>/<int:pollitemid>', views.vote, name='vote-url'),
-    path('govote/', views.govote),
+    path('filer/', include('filer.urls')),
 
     path('test', TemplateView.as_view(template_name='test.html')),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
