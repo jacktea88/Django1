@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>list products</title>
+</head>
+<body>
+    <div class="container">
+        <h1>學生資料管理系統</h1>
+        
+        {% if students %}
+            <table class="student-table">
+                <thead>
+                    <tr>
+                        <th>學號</th>
+                        <th>姓名</th>
+                        <th>年齡</th>
+                        <th>班級</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                        <tr>
+                            <td>{{ student.id }}</td>
+                            <td>{{ student.name }}</td>
+                            <td>{{ student.age }}</td>
+                            <td>{{ student.class }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="no-data">
+                目前沒有學生資料
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

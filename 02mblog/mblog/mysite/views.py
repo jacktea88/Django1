@@ -165,3 +165,31 @@ def showpost_date(request, yr, mo, day):
     html = '<a href="{}">Back</a>'.format(reverse('post_url', args=[yr, mo, day]))
     # return HttpResponse(html)
     return render(request, 'post_date.html', locals())
+
+# 04 view & template練習習題
+# 習題一
+def student_list(request):
+    students = [
+        {'id': 1, 'name': '張小明', 'age': 20, 'class': 'A班'},
+        {'id': 2, 'name': '李小華', 'age': 19, 'class': 'B班'},
+        {'id': 3, 'name': '王小美', 'age': 21, 'class': 'A班'},
+        {'id': 4, 'name': '陳小強', 'age': 20, 'class': 'C班'},
+    ]
+    # return render(request, 'student_list.html', {'students': students})
+    return render(request, 'student_list.html', locals())
+
+# 習題二
+def student_grades(request):
+    student_grades = [
+        {'id': 1, 'name': '張小明', 'chinese': 85, 'math': 92, 'english': 78},
+        {'id': 2, 'name': '李小華', 'chinese': 90, 'math': 76, 'english': 88},
+        {'id': 3, 'name': '王小美', 'chinese': 72, 'english': 85, 'math': 90},
+        {'id': 4, 'name': '陳小強', 'chinese': 88, 'math': 95, 'english': 82},
+    ]
+    
+    # 計算平均分數 (在template中也可以使用custom filter)
+    for student in student_grades:
+        total = student['chinese'] + student['math'] + student['english']
+        student['average'] = round(total / 3, 1)
+    
+    return render(request, 'student_grades.html', {'student_grades': student_grades})

@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.urls import path, include
 from mysite.views import homepage, showpost, listing, listing2
 from mysite.views import showpost_date, about, about2, about3, disp_detail, about_author
+#習題
+from mysite.views import student_list, student_grades
 
 about_patterns = [
     path('about2/', about2, name='about2'),
@@ -38,6 +40,8 @@ urlpatterns = [
     # path('about/', about, name='about'),
     path('author/', include(about_patterns)),
     # path('post/<int:yr>/<int:mo>/<int:day>/', showpost_date, name='post_url'),
+    path('student/', student_list, name='student_list'),
+    path('grade/', student_grades, name='grade_list'),
 
 
 

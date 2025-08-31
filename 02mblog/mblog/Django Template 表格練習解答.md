@@ -2,6 +2,16 @@
 
 ## 題目1 解答：基本學生資料表格
 
+### urls.py
+```python
+from django.urls import path
+from mysite.views import student_list
+
+urlpatterns = [
+    path('students/', student_list, name='student_list'), 
+]
+
+```
 ### views.py
 ```python
 from django.shortcuts import render
@@ -13,7 +23,7 @@ def student_list(request):
         {'id': 3, 'name': '王小美', 'age': 21, 'class': 'A班'},
         {'id': 4, 'name': '陳小強', 'age': 20, 'class': 'C班'},
     ]
-    return render(request, 'students/student_list.html', {'students': students})
+    return render(request, 'student_list.html', {'students': students})
 ```
 
 ### templates/students/student_list.html
@@ -123,6 +133,16 @@ def student_list(request):
 
 ## 題目2 解答：成績表格with條件格式
 
+### urls.py
+```python
+from django.urls import path
+from mysite.views import student_grades
+
+urlpatterns = [
+    path('grades/', student_grades, name='student_grades'),
+]
+
+```
 ### views.py
 ```python
 from django.shortcuts import render
@@ -140,7 +160,7 @@ def student_grades(request):
         total = student['chinese'] + student['math'] + student['english']
         student['average'] = round(total / 3, 1)
     
-    return render(request, 'students/student_grades.html', {'student_grades': student_grades})
+    return render(request, 'student_grades.html', {'student_grades': student_grades})
 ```
 
 ### templates/students/student_grades.html

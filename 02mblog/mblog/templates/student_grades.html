@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>list products</title>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 學生成績管理系統</h1>
+        
+        {% if student_grades %}
+            <div class="stats">
+                <strong>班級總人數：{{ student_grades|length }} 人</strong>
+            </div>
+            
+            <table class="grades-table">
+                <thead>
+                    <tr>
+                        <th>學號</th>
+                        <th>姓名</th>
+                        <th>國文</th>
+                        <th>數學</th>
+                        <th>英文</th>
+                        <th>平均分數</th>
+                        <th>等級</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in student_grades %}
+                        <tr>
+                            <td>{{ student.id|stringformat:"03d" }}</td>
+                            <td class="student-name">{{ student.name }}</td>
+                            <td>{{ student.chinese }}</td>
+                            <td>{{ student.math }}</td>
+                            <td>{{ student.english }}</td>
+                            
+                            <!-- 平均分數with條件格式 -->
+                            {% if student.average >= 85 %}
+                                <td class="average-score grade-excellent">{{ student.average }}</td>
+                                <td class="grade-excellent">優秀 🌟</td>
+                            {% elif student.average >= 70 %}
+                                <td class="average-score grade-good">{{ student.average }}</td>
+                                <td class="grade-good">良好 👍</td>
+                            {% else %}
+                                <td class="average-score grade-poor">{{ student.average }}</td>
+                                <td class="grade-poor">待加強 📚</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <!-- 圖例說明 -->
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color grade-excellent"></div>
+                    <span>優秀 (≥85分)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color grade-good"></div>
+                    <span>良好 (70-84分)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color grade-poor"></div>
+                    <span>待加強 (<70分)</span>
+                </div>
+            </div>
+            
+        {% else %}
+            <div class="no-data">
+                目前沒有成績資料
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
