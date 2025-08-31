@@ -22,6 +22,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('', views.index),
+    path('<int:id>/', views.index),
+    path('product/<int:id>/', views.index, name='product-url'),
     path('poll/<int:pollid>', views.poll, name='poll-url'),
     path('vote/<int:pollid>/<int:pollitemid>', views.vote, name='vote-url'),
     path('govote/', views.govote),
