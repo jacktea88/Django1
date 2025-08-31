@@ -1,5 +1,6 @@
 #-*- coding: utf-8 -*-
 from django.db import models
+from filer.fields.image import FilerImageField
 
 class Poll(models.Model):
     name = models.CharField(max_length=200, null=False)
@@ -35,7 +36,8 @@ class Product(models.Model):
     sku = models.CharField( max_length=50)
     name = models.CharField( max_length=50)
     description = models.TextField()
-    image = models.URLField(max_length=200, null=True)
+    # image = models.URLField(max_length=200, null=True)
+    image = FilerImageField(related_name='product_image', null=True, on_delete=models.SET_NULL)
     website = models.URLField(max_length=200, null=True)
     stock = models.PositiveIntegerField(default=0)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)

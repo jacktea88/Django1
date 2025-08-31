@@ -54,8 +54,9 @@
             {% for product in products %}
                 <div class='col-xs-3 col-sm-3 col-md-3'>
                     <div class='thumbnail'>
-                        <img src='{{product.image}}'>
-                            <p>{{ product.image }}</p>
+                        <img src='{{product.image.url}}'>
+                            <p>{{ product.image.url }}</p>
+                            <a href="http://127.0.0.1:8000{{ product.image.url }}">圖片連結</a>
                         {% if product.image == None %}                            
                             <p>沒有圖片</p>
                         {% endif %}
