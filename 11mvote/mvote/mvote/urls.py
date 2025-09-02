@@ -25,7 +25,7 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('', views.index),
     path('<int:id>/', views.index),
-    path('product/<int:id>/', views.index, name='product-url'),
+    path('product/<int:id>/', views.product, name='product-url'),
     path('filer/', include('filer.urls')),
 
     path('test', TemplateView.as_view(template_name='test.html')),
