@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'easy_thumbnails',
     'filer',
     'mptt',
+    'cart',
     
 ]
 
@@ -76,6 +77,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'cart.context_processor.cart_total_amount',
             ],
         },
     },
@@ -238,3 +240,8 @@ FILER_STORAGES = {
 }
 
 # FILER_DATABASE = 'default'
+
+# django-shopping-cart
+
+CART_SESSION_ID = 'cart'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True

@@ -29,6 +29,9 @@ urlpatterns = [
     path('filer/', include('filer.urls')),
 
     path('test', TemplateView.as_view(template_name='test.html')),
+    path('cart/', views.cart_detail, name='cart-detail'),
+    path('cart/additem/<int:id>/<int:quantity>/', views.add_to_cart, name='additem-url'),
+    path('cart/removeitem/<int:id>/', views.remove_from_cart, name='removeitem-url'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -8,6 +8,9 @@ from django.contrib.auth.decorators import login_required
 from allauth.account.decorators import verified_email_required
 from mysite import models
 
+# cart
+from cart.cart import Cart
+
 # Create your views here.
 ####
 #   原始還沒有分類功能時的index，只顯示所有商品
@@ -71,6 +74,35 @@ def product(request, id):   # id是product的id，不處理id=0，也不處理�
 
     return render(request, 'product.html', locals())
 
+@login_required
+def add_to_cart(request, id, quantity):
+    cart = Cart(request)
+    product = models.Product.objects.get(id=id)
+    cart.add(product=product, quantity=quantity)
+
+    return redirect('/')
+
+@login_required
+def remove_from_cart(request, id):
+    product = models.Product.objects.get(id=id)
+    cart = Cart(request)
+    cart.remove(product)
+    return redirect('/cart/')
+
+@login_required
+def cart_detail(request):
+    all_categories = models.Category.objects.all()
+    cart = Cart(request).cart # 這裡是取得購物車所有的商品
+    #Cart(request) 會回傳一個 Cart 實例，而 .cart 則是取得該實例中的購物車物件。
+
+    print(cart)
+
+    total_price = 0
+    for _, item in cart.items():
+        current_price = float(item['price']) * int(item['quantity'])
+        total_price += current_price
+
+    return render(request, 'cart.html', locals())
 
 @login_required
 # @verified_email_required

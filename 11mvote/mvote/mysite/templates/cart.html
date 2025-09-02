@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load cart_tag %}
+{% block title %}檢視購物車{% endblock %}
+{% block content %}
+<div class='container'>
+{% for message in messages %}
+    <div class='alert alert-{{message.tags}}'>{{ message }}</div>
+{% endfor %}
+    <div>
+        <table border=1>
+            <tr>
+                <td width=300 align=center>產品名稱</td>
+                <td width=100 align=center>數量</td>
+                <td width=100 align=center>單價</td>
+                <td width=100 align=center>小計</td>
+                <td width=100 align=center>刪除</td>
+            </tr>
+            {% for id, item in cart.items %}
+            <tr>
+                <td width=300 align=center>{{ item.name }}</td>
+                <td width=100 align=center>{{ item.quantity }}</td>
+                <td width=100 align=center>{{ item.price }}</td>
+                <td width=100 align=center>{{ item.price|multiply:item.quantity }}</td>
+                <td width=100 align=center>
+                    {% comment %} <a href='{% url "removeitem-url" id %}'><span class='glyphicon glyphicon-trash'></span></a> {% endcomment %}
+                    <a href='{% url "removeitem-url" id %}'>刪除</a>
+                </td>
+                
+               
+            </tr>
+            {% endfor %}
+            <tr>
+                <td width=300 align=center><b>總計</b></td>
+                <td width=100 align=center></td>
+                <td width=100 align=center></td>
+                <td width=100 align=center><b>{{ total_price }}</b></td>
+            </tr>
+        </table>
+        
+    </div>
+</div>
+{% endblock %}
