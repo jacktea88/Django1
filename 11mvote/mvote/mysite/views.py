@@ -8,8 +8,17 @@ from django.contrib.auth.decorators import login_required
 from allauth.account.decorators import verified_email_required
 from mysite import models
 
+
 # cart
 from cart.cart import Cart
+
+
+# 訂單
+from mysite import forms
+from django.core.mail import send_mail
+from django.contrib import messages
+from django.contrib.auth.models import User
+from django.conf import settings
 
 # Create your views here.
 ####
@@ -103,6 +112,52 @@ def cart_detail(request):
         total_price += current_price
 
     return render(request, 'cart.html', locals())
+
+@verified_email_required
+def order(request):
+    all_categories = models.Category.objects.all()
+    cartInstance = Cart(request)
+    cart = cartInstance.cart
+    total_price = 0
+    for _, item in cart.items():
+        current_price = float(item['price']) * int(item['quantity'])
+        total_price += current_price
+
+    if request.method == 'POST':
+        user = User.objects.get(username=request.user.username)
+        new_order = models.Order(user=user)
+
+        form = forms.OrderForm(request.POST, instance=new_order)
+        if form.is_valid():
+            order = form.save()
+            email_messages = "您的購物內容如下：\n"
+            for _, item in cart.items(): # item是一個字典，_ 是一個常見的Python慣例，代表一個不需要使用的變數(id)，而 item 則是代表每個商品項目。
+                product = models.Product.objects.get(id=item['product_id'])
+                models.OrderItem.objects.create(
+                    order=order, 
+                    product=product,
+                    price = item['price'],
+                    quantity=item['quantity']
+                )
+                email_messages = email_messages + "\n" + \
+                                "{}, {}, {}".format(item['name'], \
+                                item['price'], item['quantity'])
+            email_messages = email_messages + \
+                            "\n總計為: {}".format(total_price)
+            send_mail('感謝您的訂購', email_messages, settings.EMAIL_HOST_USER, [user.email], fail_silently=False) # 發送了一封郵件給用戶（user.email）郵件是由 settings.EMAIL_HOST_USER 這個電子郵件地址發送的
+            send_mail('有訂單成立通知', email_messages, settings.EMAIL_HOST_USER, [settings.EMAIL_HOST_USER], fail_silently=False)
+            cartInstance.clear()
+            return redirect('/myorders/')
+    else:
+        form = forms.OrderForm()
+
+    return render(request, 'order.html', locals())
+
+def my_orders(request):
+    all_categories = models.Category.objects.all()
+    orders = models.Order.objects.filter(user=request.user)
+
+    return render(request, 'myorders.html', locals())
 
 @login_required
 # @verified_email_required

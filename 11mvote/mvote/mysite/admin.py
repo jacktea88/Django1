@@ -16,5 +16,10 @@ class ProductAdmin(admin.ModelAdmin):
 admin.site.register(models.Poll, PollAdmin)
 admin.site.register(models.PollItem, PollItemAdmin)
 admin.site.register(models.VoteCheck)
+
+#產品及分類
 admin.site.register(models.Product, ProductAdmin)
 admin.site.register(models.Category)
+#訂單
+admin.site.register(models.Order)
+admin.site.register(models.OrderItem)

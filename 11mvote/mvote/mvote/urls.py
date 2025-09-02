@@ -32,6 +32,9 @@ urlpatterns = [
     path('cart/', views.cart_detail, name='cart-detail'),
     path('cart/additem/<int:id>/<int:quantity>/', views.add_to_cart, name='additem-url'),
     path('cart/removeitem/<int:id>/', views.remove_from_cart, name='removeitem-url'),
+
+    path('order/', views.order, name='order-url'),
+    path('myorders/', views.my_orders, name='myorders-url'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
