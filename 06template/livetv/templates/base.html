@@ -6,12 +6,11 @@
     {% block title %}{% endblock title %}
 </head>
 <body>
-    <h1>This is Header message !!</h1>
+    {% include "header.html" %}
     <hr>
     {% block content %}{% endblock content %}
     <hr>
-    <h4>This is Footer message !!</h4>
-    <h5>現在時刻： {{ now }}</h5>
+    {% include "footer.html" %}
 
 </body>
 </html>
