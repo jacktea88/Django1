@@ -1,7 +1,10 @@
 <h1>This is Header message !! in header.html</h1>
     <nav class="navbar navbar-expand-sm navbar-primary bg-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">primary</a>
+            <a class="navbar-brand" href="#">
+                {% load static %}
+                <img src="{% static 'images/logo.png' %}" width="60" height="40" alt="logo">現正播出 
+            </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarID"
                 aria-controls="navbarID" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
