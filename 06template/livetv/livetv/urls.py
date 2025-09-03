@@ -23,4 +23,6 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('twtv/<int:tv_id>', views.twtv, name='tv-url'),
     path('twtv/', views.twtv, name='tv-url'),
+    path('engtv/', views.engtv, name='engtv'),
+    path('engtv/<int:tv_id>', views.engtv, name='engtv-url'),
 ]

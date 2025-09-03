@@ -1,0 +1,23 @@
+<h1>This is Header message !! in header.html</h1>
+    <nav class="navbar navbar-expand-sm navbar-primary bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                {% load static %}
+                <img src="{% static 'images/logo.png' %}" width="60" height="40" alt="logo">現正播出 
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarID"
+                aria-controls="navbarID" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarID">
+                <div class="navbar-nav">
+                    <a class="nav-link active" aria-current="page" href="/">Home</a>
+                    <a class="nav-link" href="{% url "engtv-url" 0 %}">ABC</a>
+                    <a class="nav-link" href="{% url "engtv-url" 1 %}">CNN</a>
+                    <a class="nav-link" href="{% url "engtv-url" 2 %}">FOX</a>
+                    <a class="nav-link" href="{% url "engtv-url" 3 %}">NBC</a>
+                    
+                </div>
+            </div>
+        </div>
+    </nav>

@@ -15,3 +15,12 @@ def twtv(request, tv_id=0):
     tv = tv_list[tv_id]
     now = datetime.now()
     return render(request, 'twtv.html', locals())
+
+def engtv(request, tv_id=0):
+    tv_list = [{'name':'ABC', 'tvcode':'quwqlazU-c8'},
+        {'name':'CBS', 'tvcode':'eA6Aczd3FZM'},
+        {'name':'NBC', 'tvcode':'ylYJSBUgaMA'},
+        {'name':'CNN', 'tvcode':'TCnaIE_SAtM'},]
+    tv = tv_list[tv_id]
+    now = datetime.now()
+    return render(request, 'engtv.html', locals())
