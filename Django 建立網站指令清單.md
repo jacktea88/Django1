@@ -29,7 +29,7 @@ django-admin startproject mshop
 ``` 
 
 ### 建立app 注意在settings.py中要註冊app
-
+進入剛建立的專案資料夾
 ``` bash
 cd mshop
 python manage.py startapp mysite
