@@ -144,9 +144,12 @@ def order(request):
                                 item['price'], item['quantity'])
             email_messages = email_messages + \
                             "\n總計為: {}".format(total_price)
+            # 斜線（\）常用來表示下一行的程式碼是上一行的延續，讓 Python 將兩行程式碼視為一行來執行。
+            # 清空購物車
+            cartInstance.clear()
+            messages.success(request, "訂單已成立，謝謝您的購買。")
             send_mail('感謝您的訂購', email_messages, settings.EMAIL_HOST_USER, [user.email], fail_silently=False) # 發送了一封郵件給用戶（user.email）郵件是由 settings.EMAIL_HOST_USER 這個電子郵件地址發送的
             send_mail('有訂單成立通知', email_messages, settings.EMAIL_HOST_USER, [settings.EMAIL_HOST_USER], fail_silently=False)
-            cartInstance.clear()
             return redirect('/myorders/')
     else:
         form = forms.OrderForm()
