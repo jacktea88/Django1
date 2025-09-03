@@ -21,4 +21,6 @@ from mysite import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),
+    path('twtv/<int:tv_id>', views.twtv, name='tv-url'),
+    path('twtv/', views.twtv, name='tv-url'),
 ]
