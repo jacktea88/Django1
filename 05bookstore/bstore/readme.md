@@ -1,0 +1,3 @@
+使用02env environment
+檔案是全新建立，逐步修改成習題三api有bookstore的功能
+有再建立一個api app和原本app的路由做區隔

@@ -150,6 +150,7 @@ REVIEWS_DATA = [
 **要求：**
 1. 遵循RESTful設計原則
 2. 使用HTTP方法區分操作
+3. views.py中使用return JsonResponse()回應JSON資料
 
 
 **預期API結構：**
