@@ -9,7 +9,9 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 </head>
 <body>
-    {% include "header_eng.html" %}
+    {% block header %}
+        {% include "header_tw.html" %}  <!-- 預設直接引用header_tw.html 或是由外部修改成其他header.html -->
+    {% endblock header %}
     <hr>
     {% block content %}{% endblock content %}
     <hr>

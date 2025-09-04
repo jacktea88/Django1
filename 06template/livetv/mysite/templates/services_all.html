@@ -1,0 +1,415 @@
+<!-- templates/services.html -->
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>服務項目 - 我的網站</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    
+    <!-- 自定義CSS -->
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .navbar-nav .nav-link {
+            font-weight: 500;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+        
+        .navbar-nav .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .footer {
+            background-color: #f8f9fa;
+            margin-top: auto;
+            padding: 2rem 0;
+        }
+        
+        .main-content {
+            min-height: calc(100vh - 200px);
+        }
+        
+        @media (max-width: 768px) {
+            .navbar-nav {
+                text-align: center;
+                margin-top: 1rem;
+            }
+            
+            .user-info {
+                justify-content: center;
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid #dee2e6;
+            }
+        }
+    </style>
+    
+    <!-- 額外CSS區塊 -->
+    
+<style>
+    .service-card {
+        transition: all 0.3s ease;
+        border: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        height: 100%;
+    }
+    
+    .service-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .service-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #0d6efd, #6610f2);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin: 0 auto 1.5rem;
+    }
+    
+    .price-tag {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        font-weight: bold;
+        display: inline-block;
+    }
+    
+    .search-section {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        padding: 3rem 0;
+    }
+    
+    .filter-btn {
+        margin: 0.25rem;
+        transition: all 0.3s ease;
+    }
+    
+    .filter-btn.active {
+        background: #0d6efd;
+        color: white;
+        box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+    }
+</style>
+
+</head>
+<body>
+    <!-- Header區塊 -->
+    
+        <!-- templates/header.html -->
+<header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <div class="container">
+            <!-- Logo/品牌名稱 -->
+            <a class="navbar-brand d-flex align-items-center" href="/home/">
+                <i class="bi bi-globe2 me-2 text-primary"></i>
+                我的網站
+            </a>
+
+            <!-- 手機版選單切換按鈕 -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- 導航選單 -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/home/">
+                            <i class="bi bi-house-door me-1"></i>首頁
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about/">
+                            <i class="bi bi-info-circle me-1"></i>關於我們
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="servicesDropdown" role="button" 
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-gear me-1"></i>服務項目
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="servicesDropdown">
+                            <li><a class="dropdown-item" href="/services/">全部服務</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">網頁設計</a></li>
+                            <li><a class="dropdown-item" href="#">APP開發</a></li>
+                            <li><a class="dropdown-item" href="#">系統整合</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact/">
+                            <i class="bi bi-envelope me-1"></i>聯絡我們
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- 使用者狀態區域 -->
+                <div class="user-info">
+                    
+                        <!-- 未登入使用者 -->
+                        <div class="d-flex gap-2">
+                            <a href="/login/" class="btn btn-outline-primary">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>登入
+                            </a>
+                            <a href="/register/" class="btn btn-primary">
+                                <i class="bi bi-person-plus me-1"></i>註冊
+                            </a>
+                        </div>
+                    
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 麵包屑導航（可選） -->
+    
+    
+    
+</header>
+    
+
+    <!-- 主要內容區域 -->
+    <main class="main-content">
+        
+<!-- 搜尋區塊 -->
+<section class="search-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2">
+                <h2 class="text-center mb-4">我們的服務項目</h2>
+                <p class="text-center text-muted mb-4">專業的數位解決方案，滿足您的各種需求</p>
+                
+                <!-- 搜尋表單 -->
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <form method="GET" action="/services/" class="row g-3">
+                            <div class="col-md-6">
+                                <label for="search" class="form-label">搜尋服務</label>
+                                <input type="text" class="form-control" id="search" name="search" 
+                                       placeholder="請輸入關鍵字..." value="">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="category" class="form-label">服務類別</label>
+                                <select class="form-select" id="category" name="category">
+                                    <option value="">全部類別</option>
+                                    <option value="web" >網頁設計</option>
+                                    <option value="app" >APP開發</option>
+                                    <option value="system" >系統整合</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="bi bi-search"></i> 搜尋
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- 快速篩選 -->
+                <div class="text-center mt-4">
+                    <h6>快速篩選：</h6>
+                    <button class="btn btn-outline-secondary filter-btn active" data-filter="all">全部</button>
+                    <button class="btn btn-outline-secondary filter-btn" data-filter="web">網頁設計</button>
+                    <button class="btn btn-outline-secondary filter-btn" data-filter="app">APP開發</button>
+                    <button class="btn btn-outline-secondary filter-btn" data-filter="system">系統整合</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 服務項目展示 -->
+<section class="py-5">
+    <div class="container">
+        <div class="row" id="services-container">
+            
+            <div class="col-12 text-center">
+                <div class="alert alert-info">
+                    <h4>沒有找到相關服務</h4>
+                    <p>請嘗試調整搜尋條件或聯絡我們了解更多服務項目。</p>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+<!-- CTA區塊 -->
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="mb-4">準備開始您的專案了嗎？</h2>
+        <p class="lead mb-4">立即聯絡我們，獲得專業的諮詢服務與客製化解決方案</p>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+            <a href="/contact/" class="btn btn-light btn-lg me-md-2">
+                <i class="bi bi-telephone"></i> 免費諮詢
+            </a>
+            <a href="#" class="btn btn-outline-light btn-lg">
+                <i class="bi bi-download"></i> 下載手冊
+            </a>
+        </div>
+    </div>
+</section>
+
+    </main>
+
+    <!-- Footer區塊 -->
+    
+    <footer class="footer bg-light mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>我的網站</h5>
+                    <p class="text-muted">提供優質的服務與產品，滿足您的需求。</p>
+                </div>
+                <div class="col-md-3">
+                    <h6>快速連結</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="/home/" class="text-decoration-none">首頁</a></li>
+                        <li><a href="/about/" class="text-decoration-none">關於我們</a></li>
+                        <li><a href="/services/" class="text-decoration-none">服務項目</a></li>
+                        <li><a href="/contact/" class="text-decoration-none">聯絡我們</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h6>聯絡資訊</h6>
+                    <p class="text-muted mb-1">
+                        <i class="bi bi-telephone"></i> (02) 1234-5678
+                    </p>
+                    <p class="text-muted mb-1">
+                        <i class="bi bi-envelope"></i> info@mysite.com
+                    </p>
+                    <p class="text-muted">
+                        <i class="bi bi-geo-alt"></i> 台北市信義區信義路五段7號
+                    </p>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="text-muted mb-0">
+                        &copy; 2025 我的網站. All rights reserved.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+
+    <!-- Bootstrap 5 JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 額外JavaScript區塊 -->
+    
+<script>
+    // 服務篩選功能
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const serviceItems = document.querySelectorAll('.service-item');
+        
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // 更新按鈕狀態
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                const filterValue = this.getAttribute('data-filter');
+                
+                // 篩選服務項目
+                serviceItems.forEach(item => {
+                    const itemCategory = item.getAttribute('data-category');
+                    if (filterValue === 'all' || itemCategory === filterValue) {
+                        item.style.display = 'block';
+                        item.style.opacity = '0';
+                        setTimeout(() => {
+                            item.style.opacity = '1';
+                        }, 100);
+                    } else {
+                        item.style.opacity = '0';
+                        setTimeout(() => {
+                            item.style.display = 'none';
+                        }, 300);
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+
+    <!-- 通用JavaScript -->
+    <script>
+        // 導航高亮當前頁面
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // 平滑滾動
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

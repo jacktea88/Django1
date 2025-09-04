@@ -1,0 +1,222 @@
+<!-- templates/services.html -->
+{% extends 'base.html' %}
+
+{% block title %}服務項目 - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .service-card {
+        transition: all 0.3s ease;
+        border: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        height: 100%;
+    }
+    
+    .service-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .service-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #0d6efd, #6610f2);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin: 0 auto 1.5rem;
+    }
+    
+    .price-tag {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        font-weight: bold;
+        display: inline-block;
+    }
+    
+    .search-section {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        padding: 3rem 0;
+    }
+    
+    .filter-btn {
+        margin: 0.25rem;
+        transition: all 0.3s ease;
+    }
+    
+    .filter-btn.active {
+        background: #0d6efd;
+        color: white;
+        box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- 搜尋區塊 -->
+<section class="search-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2">
+                <h2 class="text-center mb-4">我們的服務項目</h2>
+                <p class="text-center text-muted mb-4">專業的數位解決方案，滿足您的各種需求</p>
+                
+                <!-- 搜尋表單 -->
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <form method="GET" action="{% url 'services' %}" class="row g-3">
+                            <div class="col-md-6">
+                                <label for="search" class="form-label">搜尋服務</label>
+                                <input type="text" class="form-control" id="search" name="search" 
+                                       placeholder="請輸入關鍵字..." value="{{ request.GET.search }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="category" class="form-label">服務類別</label>
+                                <select class="form-select" id="category" name="category">
+                                    <option value="">全部類別</option>
+                                    <option value="web" {% if request.GET.category == 'web' %}selected{% endif %}>網頁設計</option>
+                                    <option value="app" {% if request.GET.category == 'app' %}selected{% endif %}>APP開發</option>
+                                    <option value="system" {% if request.GET.category == 'system' %}selected{% endif %}>系統整合</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="bi bi-search"></i> 搜尋
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- 快速篩選 -->
+                <div class="text-center mt-4">
+                    <h6>快速篩選：</h6>
+                    <button class="btn btn-outline-secondary filter-btn active" data-filter="all">全部</button>
+                    <button class="btn btn-outline-secondary filter-btn" data-filter="web">網頁設計</button>
+                    <button class="btn btn-outline-secondary filter-btn" data-filter="app">APP開發</button>
+                    <button class="btn btn-outline-secondary filter-btn" data-filter="system">系統整合</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 服務項目展示 -->
+<section class="py-5">
+    <div class="container">
+        <div class="row" id="services-container">
+            {% for service in services %}
+            <div class="col-lg-4 col-md-6 mb-4 service-item" data-category="{{ service.category }}">
+                <div class="card service-card">
+                    <div class="card-body text-center">
+                        <div class="service-icon">
+                            {% if service.category == 'web' %}
+                                <i class="bi bi-globe"></i>
+                            {% elif service.category == 'app' %}
+                                <i class="bi bi-phone"></i>
+                            {% elif service.category == 'system' %}
+                                <i class="bi bi-gear"></i>
+                            {% else %}
+                                <i class="bi bi-tools"></i>
+                            {% endif %}
+                        </div>
+                        <h4 class="card-title">{{ service.name }}</h4>
+                        <p class="card-text text-muted mb-3">{{ service.description }}</p>
+                        
+                        <!-- 服務特色 -->
+                        <ul class="list-unstyled text-start mb-4">
+                            {% for feature in service.features %}
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle text-success me-2"></i>{{ feature }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        
+                        <div class="mt-auto">
+                            <div class="mb-3">
+                                <span class="price-tag">
+                                    NT$ {{ service.price|floatformat:0 }}起
+                                </span>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <a href="#" class="btn btn-primary">
+                                    <i class="bi bi-info-circle"></i> 了解詳情
+                                </a>
+                                <a href="{% url 'contact' %}" class="btn btn-outline-primary">
+                                    <i class="bi bi-chat-dots"></i> 立即諮詢
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <div class="alert alert-info">
+                    <h4>沒有找到相關服務</h4>
+                    <p>請嘗試調整搜尋條件或聯絡我們了解更多服務項目。</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CTA區塊 -->
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="mb-4">準備開始您的專案了嗎？</h2>
+        <p class="lead mb-4">立即聯絡我們，獲得專業的諮詢服務與客製化解決方案</p>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+            <a href="{% url 'contact' %}" class="btn btn-light btn-lg me-md-2">
+                <i class="bi bi-telephone"></i> 免費諮詢
+            </a>
+            <a href="#" class="btn btn-outline-light btn-lg">
+                <i class="bi bi-download"></i> 下載手冊
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // 服務篩選功能
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const serviceItems = document.querySelectorAll('.service-item');
+        
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // 更新按鈕狀態
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                const filterValue = this.getAttribute('data-filter');
+                
+                // 篩選服務項目
+                serviceItems.forEach(item => {
+                    const itemCategory = item.getAttribute('data-category');
+                    if (filterValue === 'all' || itemCategory === filterValue) {
+                        item.style.display = 'block';
+                        item.style.opacity = '0';
+                        setTimeout(() => {
+                            item.style.opacity = '1';
+                        }, 100);
+                    } else {
+                        item.style.opacity = '0';
+                        setTimeout(() => {
+                            item.style.display = 'none';
+                        }, 300);
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

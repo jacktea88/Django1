@@ -1,0 +1,243 @@
+<!-- templates/about.html -->
+{% extends 'base.html' %}
+
+{% block title %}關於我們 - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .about-hero {
+        background: linear-gradient(rgba(13, 110, 253, 0.8), rgba(13, 110, 253, 0.8)), 
+                    url('https://via.placeholder.com/1920x600/0d6efd/ffffff?text=About+Us') center/cover;
+        color: white;
+        padding: 5rem 0;
+    }
+    
+    .team-card {
+        transition: transform 0.3s ease;
+        border: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .team-card:hover {
+        transform: translateY(-10px);
+    }
+    
+    .team-photo {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border: 4px solid #fff;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    
+    .timeline {
+        position: relative;
+        padding: 0;
+        list-style: none;
+    }
+    
+    .timeline:before {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 40px;
+        width: 2px;
+        margin-left: -1.5px;
+        content: '';
+        background-color: #e9ecef;
+    }
+    
+    .timeline > li {
+        position: relative;
+        min-height: 50px;
+        margin-bottom: 50px;
+    }
+    
+    .timeline > li:after,
+    .timeline > li:before {
+        content: ' ';
+        display: table;
+    }
+    
+    .timeline > li:after {
+        clear: both;
+    }
+    
+    .timeline > li .timeline-panel {
+        position: relative;
+        float: right;
+        width: calc(100% - 90px);
+        padding: 20px;
+        text-align: left;
+        background: #fff;
+        border: 1px solid #d4edda;
+        border-radius: 8px;
+        box-shadow: 0 1px 6px rgba(0,0,0,0.175);
+    }
+    
+    .timeline > li .timeline-badge {
+        position: absolute;
+        top: 16px;
+        left: 15px;
+        z-index: 100;
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+        font-size: 1.4em;
+        text-align: center;
+        background-color: #0d6efd;
+        color: #fff;
+        border-radius: 50%;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- 關於我們英雄區塊 -->
+<section class="about-hero text-center">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-4">關於我們</h1>
+        <p class="lead">專業團隊，用心服務，創造價值</p>
+    </div>
+</section>
+
+<!-- 公司介紹 -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2 class="mb-4">我們的使命</h2>
+                <p class="lead">致力於提供最優質的數位解決方案，協助客戶在數位時代中脫穎而出。</p>
+                <p>自2019年成立以來，我們始終秉持著「創新、專業、服務」的核心價值，為超過150家企業提供了專業的網頁設計、APP開發及系統整合服務。我們的團隊擁有豐富的實務經驗，能夠深度理解客戶需求，提供量身訂做的解決方案。</p>
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <h5><i class="bi bi-check-circle-fill text-success me-2"></i>專業團隊</h5>
+                        <p>由資深開發者組成的專業團隊</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5><i class="bi bi-check-circle-fill text-success me-2"></i>品質保證</h5>
+                        <p>嚴格的品質控制與測試流程</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <img src="https://via.placeholder.com/500x400/f8f9fa/6c757d?text=Company+Image" 
+                     class="img-fluid rounded shadow" alt="公司介紹">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 團隊成員 -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2>我們的團隊</h2>
+                <p class="text-muted">專業、熱忱、創新的團隊成員</p>
+            </div>
+        </div>
+        <div class="row">
+            {% for member in team_members %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card team-card text-center h-100">
+                    <div class="card-body">
+                        <img src="https://via.placeholder.com/150x150/{{ forloop.counter0|add:1 }}{{ forloop.counter0|add:1 }}{{ forloop.counter0|add:1 }}/ffffff?text={{ member.name|first }}" 
+                             class="team-photo rounded-circle mx-auto d-block mb-3" alt="{{ member.name }}">
+                        <h5 class="card-title">{{ member.name }}</h5>
+                        <p class="text-primary fw-bold">{{ member.position }}</p>
+                        <p class="card-text">{{ member.description|default:"專業領域的資深專家，擁有豐富的實務經驗與創新思維。" }}</p>
+                        <div class="mt-3">
+                            <a href="#" class="btn btn-outline-primary btn-sm me-2">
+                                <i class="bi bi-linkedin"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-envelope"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p class="text-muted">團隊成員資訊準備中...</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- 公司歷史時間軸 -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2>發展歷程</h2>
+                <p class="text-muted">我們的成長軌跡</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <ul class="timeline">
+                    <li>
+                        <div class="timeline-badge">
+                            <i class="bi bi-flag"></i>
+                        </div>
+                        <div class="timeline-panel">
+                            <div class="timeline-heading">
+                                <h4>2019年</h4>
+                                <p><small class="text-muted">公司成立</small></p>
+                            </div>
+                            <div class="timeline-body">
+                                <p>公司正式成立，開始提供專業的網頁設計服務，初期團隊3人。</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="timeline-badge">
+                            <i class="bi bi-trophy"></i>
+                        </div>
+                        <div class="timeline-panel">
+                            <div class="timeline-heading">
+                                <h4>2020年</h4>
+                                <p><small class="text-muted">業務擴展</small></p>
+                            </div>
+                            <div class="timeline-body">
+                                <p>擴展APP開發服務，成功完成50個專案，團隊擴充至8人。</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="timeline-badge">
+                            <i class="bi bi-award"></i>
+                        </div>
+                        <div class="timeline-panel">
+                            <div class="timeline-heading">
+                                <h4>2022年</h4>
+                                <p><small class="text-muted">獲得認證</small></p>
+                            </div>
+                            <div class="timeline-body">
+                                <p>榮獲ISO 9001認證，建立完善的品質管理系統，累計服務客戶超過100家。</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="timeline-badge">
+                            <i class="bi bi-rocket"></i>
+                        </div>
+                        <div class="timeline-panel">
+                            <div class="timeline-heading">
+                                <h4>2024年</h4>
+                                <p><small class="text-muted">持續創新</small></p>
+                            </div>
+                            <div class="timeline-body">
+                                <p>導入AI技術，提供更智慧化的解決方案，團隊規模達到15人。</p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

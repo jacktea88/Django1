@@ -24,3 +24,36 @@ def engtv(request, tv_id=0):
     tv = tv_list[tv_id]
     now = datetime.now()
     return render(request, 'engtv.html', locals())
+
+
+# execercise
+def home(request):
+
+    return render(request, 'home_all.html', locals())
+    return render(request, 'home.html', locals())
+
+def about(request):
+    
+    return render(request, 'about_all.html', locals())
+    return render(request, 'about.html', locals())
+
+def services(request):
+    
+    return render(request, 'services_all.html', locals())
+    return render(request, 'services.html', locals())
+
+def contact(request):
+    
+    return render(request, 'contact.html', locals())
+
+def contact_all(request):
+    
+    return render(request, 'contact_all.html', locals())
+
+def login(request):
+    
+    return render(request, 'login.html', locals())
+
+def register(request):
+    
+    return render(request, 'register.html', locals())

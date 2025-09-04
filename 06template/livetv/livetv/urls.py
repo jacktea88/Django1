@@ -25,4 +25,12 @@ urlpatterns = [
     path('twtv/', views.twtv, name='tv-url'),
     path('engtv/', views.engtv, name='engtv'),
     path('engtv/<int:tv_id>', views.engtv, name='engtv-url'),
+    # execercise
+    path('home/', views.home, name='home'),
+    path('about/', views.about, name='about'),
+    path('services/', views.services, name='services'),
+    path('contact/', views.contact, name='contact'),
+    path('contactall/', views.contact_all, name='contact_all'),
+    path('login/', views.login, name='login'),
+    path('register/', views.register, name='register'),
 ]

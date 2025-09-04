@@ -1,0 +1,228 @@
+<!-- templates/home.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}首頁 - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 4rem 0;
+    }
+    
+    .carousel-item img {
+        height: 400px;
+        object-fit: cover;
+    }
+    
+    .news-card {
+        transition: transform 0.3s ease;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .news-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    
+    .stats-section {
+        background: #f8f9fa;
+    }
+    
+    .stat-number {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #0d6efd;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- 英雄區塊 -->
+<section class="hero-section text-center">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">歡迎來到我的網站</h1>
+                <p class="lead mb-4">提供專業服務，創造無限可能。我們致力於為客戶提供最優質的解決方案。</p>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    <a href="{% url 'services' %}" class="btn btn-light btn-lg me-md-2">
+                        <i class="bi bi-arrow-right-circle"></i> 了解服務
+                    </a>
+                    <a href="{% url 'contact' %}" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-telephone"></i> 立即聯絡
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 mt-4 mt-lg-0">
+                <img src="https://via.placeholder.com/500x300/667eea/ffffff?text=Hero+Image" 
+                     class="img-fluid rounded" alt="Hero Image">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 輪播圖區域 -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">精選展示</h2>
+        <div id="mainCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="0" 
+                        class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="1" 
+                        aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="2" 
+                        aria-label="Slide 3"></button>
+            </div>
+            <div class="carousel-inner rounded">
+                <div class="carousel-item active">
+                    <img src="https://via.placeholder.com/1200x400/0d6efd/ffffff?text=Slide+1" 
+                         class="d-block w-100" alt="輪播圖1">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>專業網頁設計</h5>
+                        <p>打造符合您需求的專業網站</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="https://via.placeholder.com/1200x400/6c757d/ffffff?text=Slide+2" 
+                         class="d-block w-100" alt="輪播圖2">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>APP開發服務</h5>
+                        <p>跨平台行動應用程式開發</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="https://via.placeholder.com/1200x400/198754/ffffff?text=Slide+3" 
+                         class="d-block w-100" alt="輪播圖3">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>系統整合方案</h5>
+                        <p>提供完整的系統整合服務</p>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" 
+                    data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" 
+                    data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- 統計數據區塊 -->
+<section class="stats-section py-5">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="stat-number" data-count="150">0</div>
+                <h5>完成專案</h5>
+                <p class="text-muted">累積完成專案數量</p>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="stat-number" data-count="98">0</div>
+                <h5>滿意客戶</h5>
+                <p class="text-muted">客戶滿意度百分比</p>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="stat-number" data-count="5">0</div>
+                <h5>服務年資</h5>
+                <p class="text-muted">專業服務經驗年數</p>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="stat-number" data-count="24">0</div>
+                <h5>全天候支援</h5>
+                <p class="text-muted">小時客服支援</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 最新消息區塊 -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2>最新消息</h2>
+                <p class="text-muted">了解我們的最新動態與重要資訊</p>
+            </div>
+        </div>
+        <div class="row">
+            {% for news in news_list %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card news-card h-100">
+                    <img src="https://via.placeholder.com/400x250/{{ forloop.counter0|add:1 }}{{ forloop.counter0|add:1 }}{{ forloop.counter0|add:1 }}/ffffff?text=News+{{ forloop.counter }}" 
+                         class="card-img-top" alt="{{ news.title }}">
+                    <div class="card-body d-flex flex-column">
+                        <small class="text-muted mb-2">
+                            <i class="bi bi-calendar3"></i> {{ news.date|date:"Y年m月d日" }}
+                        </small>
+                        <h5 class="card-title">{{ news.title }}</h5>
+                        <p class="card-text flex-grow-1">{{ news.content|truncatewords:20 }}</p>
+                        <a href="#" class="btn btn-primary mt-auto">
+                            閱讀更多 <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p class="text-muted">目前沒有最新消息</p>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="#" class="btn btn-outline-primary">查看所有消息</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // 數字動畫效果
+    function animateNumbers() {
+        const numbers = document.querySelectorAll('[data-count]');
+        numbers.forEach(number => {
+            const target = parseInt(number.getAttribute('data-count'));
+            const increment = target / 50;
+            let current = 0;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    number.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    number.textContent = Math.ceil(current);
+                }
+            }, 40);
+        });
+    }
+    
+    // 滾動到統計區塊時觸發動畫
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateNumbers();
+                observer.unobserve(entry.target);
+            }
+        });
+    });
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const statsSection = document.querySelector('.stats-section');
+        if (statsSection) {
+            observer.observe(statsSection);
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,1409 @@
+<!-- templates/product_list.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}產品列表 - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .filter-sidebar {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .product-card {
+        border: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        height: 100%;
+        overflow: hidden;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .product-image {
+        height: 200px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .product-card:hover .product-image {
+        transform: scale(1.05);
+    }
+    
+    .price-original {
+        color: #6c757d;
+        text-decoration: line-through;
+        font-size: 0.9rem;
+    }
+    
+    .price-current {
+        color: #dc3545;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+    
+    .rating {
+        color: #ffc107;
+    }
+    
+    .badge-new {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: #28a745;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        z-index: 1;
+    }
+    
+    .badge-sale {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #dc3545;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        z-index: 1;
+    }
+    
+    .sort-options {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .view-toggle {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .view-toggle .btn {
+        padding: 0.375rem 0.75rem;
+    }
+    
+    .grid-view .col-md-6 {
+        display: block;
+    }
+    
+    .list-view .col-md-6 {
+        display: none;
+    }
+    
+    .list-view .product-list-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .list-view .product-list-item img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-right: 1rem;
+    }
+    
+    .pagination .page-link {
+        color: #0d6efd;
+        border: none;
+        margin: 0 2px;
+        border-radius: 8px;
+    }
+    
+    .pagination .page-item.active .page-link {
+        background: #0d6efd;
+        border-color: #0d6efd;
+    }
+    
+    .search-highlight {
+        background: #fff3cd;
+        padding: 0.25rem;
+        border-radius: 3px;
+    }
+</style>
+{% endblock %}
+
+{% block breadcrumb %}
+<div class="bg-light border-bottom">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 py-2">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'home' %}" class="text-decoration-none">
+                        <i class="bi bi-house-door"></i> 首頁
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">產品列表</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- 頁面標題與搜尋 -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>產品列表</h1>
+            <p class="text-muted">
+                {% if request.GET.search %}
+                    搜尋「{{ request.GET.search }}」的結果，共找到 {{ products|length }} 個產品
+                {% else %}
+                    共有 {{ products|length }} 個產品
+                {% endif %}
+            </p>
+        </div>
+        <div class="col-md-4">
+            <form method="GET" action="{% url 'product_list' %}" class="d-flex">
+                <input type="text" class="form-control me-2" name="search" 
+                       placeholder="搜尋產品..." value="{{ request.GET.search }}">
+                <button class="btn btn-primary" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- 篩選側邊欄 -->
+        <div class="col-lg-3">
+            <div class="filter-sidebar">
+                <h5 class="mb-3">
+                    <i class="bi bi-funnel me-2"></i>篩選條件
+                </h5>
+                
+                <form method="GET" action="{% url 'product_list' %}" id="filterForm">
+                    <!-- 保留搜尋關鍵字 -->
+                    {% if request.GET.search %}
+                        <input type="hidden" name="search" value="{{ request.GET.search }}">
+                    {% endif %}
+                    
+                    <!-- 分類篩選 -->
+                    <div class="mb-4">
+                        <h6>產品分類</h6>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="category" value="" id="cat_all"
+                                   {% if not request.GET.category %}checked{% endif %}>
+                            <label class="form-check-label" for="cat_all">全部分類</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="category" value="electronics" id="cat_electronics"
+                                   {% if request.GET.category == 'electronics' %}checked{% endif %}>
+                            <label class="form-check-label" for="cat_electronics">3C電子</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="category" value="fashion" id="cat_fashion"
+                                   {% if request.GET.category == 'fashion' %}checked{% endif %}>
+                            <label class="form-check-label" for="cat_fashion">時尚服飾</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="category" value="home" id="cat_home"
+                                   {% if request.GET.category == 'home' %}checked{% endif %}>
+                            <label class="form-check-label" for="cat_home">居家生活</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="category" value="sports" id="cat_sports"
+                                   {% if request.GET.category == 'sports' %}checked{% endif %}>
+                            <label class="form-check-label" for="cat_sports">運動休閒</label>
+                        </div>
+                    </div>
+                    
+                    <!-- 價格範圍 -->
+                    <div class="mb-4">
+                        <h6>價格範圍</h6>
+                        <div class="row">
+                            <div class="col-6">
+                                <input type="number" class="form-control form-control-sm" name="price_min" 
+                                       placeholder="最低價" value="{{ request.GET.price_min }}">
+                            </div>
+                            <div class="col-6">
+                                <input type="number" class="form-control form-control-sm" name="price_max" 
+                                       placeholder="最高價" value="{{ request.GET.price_max }}">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 評分篩選 -->
+                    <div class="mb-4">
+                        <h6>評分</h6>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="rating" value="" id="rating_all"
+                                   {% if not request.GET.rating %}checked{% endif %}>
+                            <label class="form-check-label" for="rating_all">全部評分</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="rating" value="5" id="rating_5"
+                                   {% if request.GET.rating == '5' %}checked{% endif %}>
+                            <label class="form-check-label" for="rating_5">
+                                <span class="rating">★★★★★</span> 5星
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="rating" value="4" id="rating_4"
+                                   {% if request.GET.rating == '4' %}checked{% endif %}>
+                            <label class="form-check-label" for="rating_4">
+                                <span class="rating">★★★★☆</span> 4星以上
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="rating" value="3" id="rating_3"
+                                   {% if request.GET.rating == '3' %}checked{% endif %}>
+                            <label class="form-check-label" for="rating_3">
+                                <span class="rating">★★★☆☆</span> 3星以上
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- 特殊標籤 -->
+                    <div class="mb-4">
+                        <h6>商品標籤</h6>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="is_new" value="1" id="is_new"
+                                   {% if request.GET.is_new %}checked{% endif %}>
+                            <label class="form-check-label" for="is_new">
+                                <span class="badge bg-success">新品</span>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="on_sale" value="1" id="on_sale"
+                                   {% if request.GET.on_sale %}checked{% endif %}>
+                            <label class="form-check-label" for="on_sale">
+                                <span class="badge bg-danger">特價</span>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="free_shipping" value="1" id="free_shipping"
+                                   {% if request.GET.free_shipping %}checked{% endif %}>
+                            <label class="form-check-label" for="free_shipping">
+                                <span class="badge bg-info">免運費</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-funnel"></i> 套用篩選
+                        </button>
+                        <a href="{% url 'product_list' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-clockwise"></i> 清除篩選
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- 產品列表區域 -->
+        <div class="col-lg-9">
+            <!-- 排序選項與檢視模式 -->
+            <div class="sort-options">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <form method="GET" action="{% url 'product_list' %}" class="d-flex align-items-center">
+                            <!-- 保留其他GET參數 -->
+                            {% for key, value in request.GET.items %}
+                                {% if key != 'sort' %}
+                                    <input type="hidden" name="{{ key }}" value="{{ value }}">
+                                {% endif %}
+                            {% endfor %}
+                            
+                            <label for="sort" class="form-label me-2 mb-0">排序：</label>
+                            <select name="sort" id="sort" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                                <option value="" {% if not request.GET.sort %}selected{% endif %}>預設排序</option>
+                                <option value="name_asc" {% if request.GET.sort == 'name_asc' %}selected{% endif %}>名稱 A-Z</option>
+                                <option value="name_desc" {% if request.GET.sort == 'name_desc' %}selected{% endif %}>名稱 Z-A</option>
+                                <option value="price_asc" {% if request.GET.sort == 'price_asc' %}selected{% endif %}>價格低到高</option>
+                                <option value="price_desc" {% if request.GET.sort == 'price_desc' %}selected{% endif %}>價格高到低</option>
+                                <option value="rating_desc" {% if request.GET.sort == 'rating_desc' %}selected{% endif %}>評分高到低</option>
+                                <option value="created_desc" {% if request.GET.sort == 'created_desc' %}selected{% endif %}>最新上架</option>
+                            </select>
+                        </form>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <span class="me-3">檢視模式：</span>
+                        <div class="view-toggle">
+                            <button class="btn btn-outline-secondary btn-sm active" id="gridView">
+                                <i class="bi bi-grid-3x3-gap"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" id="listView">
+                                <i class="bi bi-list"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 產品網格檢視 -->
+            <div id="productsGrid" class="row">
+                {% for product in products %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card product-card position-relative">
+                        <!-- 商品標籤 -->
+                        {% if product.is_new %}
+                            <span class="badge-new">新品</span>
+                        {% endif %}
+                        {% if product.on_sale %}
+                            <span class="badge-sale">-{{ product.discount }}%</span>
+                        {% endif %}
+                        
+                        <img src="https://via.placeholder.com/300x200/{{ forloop.counter0|add:1 }}{{ forloop.counter0|add:1 }}{{ forloop.counter0|add:1 }}/ffffff?text={{ product.name|truncatewords:1 }}" 
+                             class="card-img-top product-image" alt="{{ product.name }}">
+                        
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <a href="{% url 'product_detail' product.id %}" class="text-decoration-none text-dark">
+                                    {% if request.GET.search %}
+                                        {{ product.name|highlight:request.GET.search }}
+                                    {% else %}
+                                        {{ product.name }}
+                                    {% endif %}
+                                </a>
+                            </h6>
+                            
+                            <div class="mb-2">
+                                <span class="rating">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= product.rating %}★{% else %}☆{% endif %}
+                                    {% endfor %}
+                                </span>
+                                <small class="text-muted">({{ product.review_count }})</small>
+                            </div>
+                            
+                            <p class="card-text text-muted small">{{ product.description|truncatewords:10 }}</p>
+                            
+                            <div class="mb-3">
+                                {% if product.original_price and product.on_sale %}
+                                    <span class="price-original">NT$ {{ product.original_price|floatformat:0 }}</span>
+                                {% endif %}
+                                <div class="price-current">NT$ {{ product.price|floatformat:0 }}</div>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'product_detail' product.id %}" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-eye"></i> 查看詳情
+                                </a>
+                                <button class="btn btn-primary btn-sm add-to-cart" data-product-id="{{ product.id }}">
+                                    <i class="bi bi-cart-plus"></i> 加入購物車
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="bi bi-search display-1 text-muted"></i>
+                        <h3 class="mt-3">找不到符合條件的產品</h3>
+                        <p class="text-muted">請嘗試調整搜尋條件或篩選設定</p>
+                        <a href="{% url 'product_list' %}" class="btn btn-primary">
+                            <i class="bi bi-arrow-left"></i> 返回所有產品
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- 產品列表檢視 -->
+            <div id="productsList" style="display: none;">
+                {% for product in products %}
+                <div class="product-list-item">
+                    <img src="https://via.placeholder.com/120x120/{{ forloop.counter0|add:1 }}{{ forloop.counter0|add:1 }}{{ forloop.counter0|add:1 }}/ffffff?text={{ product.name|first }}" 
+                         alt="{{ product.name }}">
+                    <div class="flex-grow-1">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h5>
+                                    <a href="{% url 'product_detail' product.id %}" class="text-decoration-none">
+                                        {{ product.name }}
+                                    </a>
+                                    {% if product.is_new %}<span class="badge bg-success ms-2">新品</span>{% endif %}
+                                    {% if product.on_sale %}<span class="badge bg-danger ms-2">特價</span>{% endif %}
+                                </h5>
+                                <div class="rating mb-2">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= product.rating %}★{% else %}☆{% endif %}
+                                    {% endfor %}
+                                    <small class="text-muted ms-2">({{ product.review_count }} 評論)</small>
+                                </div>
+                                <p class="text-muted">{{ product.description|truncatewords:20 }}</p>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <div class="mb-2">
+                                    {% if product.original_price and product.on_sale %}
+                                        <div class="price-original">NT$ {{ product.original_price|floatformat:0 }}</div>
+                                    {% endif %}
+                                    <div class="price-current">NT$ {{ product.price|floatformat:0 }}</div>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <a href="{% url 'product_detail' product.id %}" class="btn btn-outline-primary btn-sm">
+                                        查看詳情
+                                    </a>
+                                    <button class="btn btn-primary btn-sm add-to-cart" data-product-id="{{ product.id }}">
+                                        加入購物車
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- 分頁 -->
+            {% if is_paginated %}
+            <nav aria-label="產品分頁" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% url_replace request 'page' page_obj.previous_page_number %}">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?{% url_replace request 'page' num %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% url_replace request 'page' page_obj.next_page_number %}">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 檢視模式切換
+        const gridView = document.getElementById('gridView');
+        const listView = document.getElementById('listView');
+        const productsGrid = document.getElementById('productsGrid');
+        const productsList = document.getElementById('productsList');
+        
+        gridView.addEventListener('click', function() {
+            this.classList.add('active');
+            listView.classList.remove('active');
+            productsGrid.style.display = 'flex';
+            productsList.style.display = 'none';
+            localStorage.setItem('viewMode', 'grid');
+        });
+        
+        listView.addEventListener('click', function() {
+            this.classList.add('active');
+            gridView.classList.remove('active');
+            productsGrid.style.display = 'none';
+            productsList.style.display = 'block';
+            localStorage.setItem('viewMode', 'list');
+        });
+        
+        // 記住使用者的檢視偏好
+        const savedViewMode = localStorage.getItem('viewMode');
+        if (savedViewMode === 'list') {
+            listView.click();
+        }
+        
+        // 加入購物車功能
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.getAttribute('data-product-id');
+                const originalText = this.innerHTML;
+                
+                // 顯示載入狀態
+                this.innerHTML = '<i class="bi bi-hourglass-split"></i> 添加中...';
+                this.disabled = true;
+                
+                // 模擬AJAX請求
+                setTimeout(() => {
+                    this.innerHTML = '<i class="bi bi-check"></i> 已加入';
+                    this.classList.remove('btn-primary');
+                    this.classList.add('btn-success');
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.classList.remove('btn-success');
+                        this.classList.add('btn-primary');
+                        this.disabled = false;
+                    }, 2000);
+                }, 1000);
+            });
+        });
+        
+        // 即時搜尋提示
+        const searchInput = document.querySelector('input[name="search"]');
+        if (searchInput) {
+            let searchTimeout;
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const query = this.value;
+                
+                if (query.length >= 2) {
+                    searchTimeout = setTimeout(() => {
+                        // 這裡可以實作即時搜尋建議
+                        console.log('搜尋建議:', query);
+                    }, 300);
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
+
+
+<!-- templates/product_detail.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .product-gallery {
+        position: sticky;
+        top: 20px;
+    }
+    
+    .main-image {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        cursor: zoom-in;
+    }
+    
+    .thumbnail-images {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+    
+    .thumbnail {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: opacity 0.3s ease;
+        flex-shrink: 0;
+        border: 2px solid transparent;
+    }
+    
+    .thumbnail.active,
+    .thumbnail:hover {
+        opacity: 1;
+        border-color: #0d6efd;
+    }
+    
+    .product-info {
+        padding: 0 2rem;
+    }
+    
+    .price-section {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+    }
+    
+    .price-current {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #dc3545;
+    }
+    
+    .price-original {
+        font-size: 1.2rem;
+        color: #6c757d;
+        text-decoration: line-through;
+        margin-right: 1rem;
+    }
+    
+    .rating-section {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .rating-stars {
+        color: #ffc107;
+        font-size: 1.2rem;
+    }
+    
+    .rating-text {
+        color: #6c757d;
+    }
+    
+    .product-badges {
+        margin-bottom: 1rem;
+    }
+    
+    .product-badges .badge {
+        margin-right: 0.5rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    .quantity-selector {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .quantity-input {
+        width: 80px;
+        text-align: center;
+    }
+    
+    .btn-quantity {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .product-actions {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .product-actions .btn {
+        flex: 1;
+        padding: 0.75rem;
+    }
+    
+    .product-specs {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .product-specs .table {
+        margin-bottom: 0;
+    }
+    
+    .product-specs .table th {
+        background: #f8f9fa;
+        font-weight: 600;
+        width: 30%;
+    }
+    
+    .review-item {
+        border-bottom: 1px solid #dee2e6;
+        padding: 1.5rem 0;
+    }
+    
+    .review-item:last-child {
+        border-bottom: none;
+    }
+    
+    .reviewer-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .reviewer-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    
+    .related-products {
+        background: #f8f9fa;
+        padding: 2rem 0;
+        margin-top: 3rem;
+    }
+    
+    .product-zoom-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        cursor: zoom-out;
+    }
+    
+    .product-zoom-overlay img {
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+    }
+    
+    .share-buttons {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .share-buttons .btn {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+    
+    .wishlist-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: white;
+        border: none;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .wishlist-btn:hover,
+    .wishlist-btn.active {
+        color: #dc3545;
+        transform: scale(1.1);
+    }
+    
+    .tab-content {
+        margin-top: 2rem;
+    }
+    
+    .review-form {
+        background: #f8f9fa;
+        padding: 2rem;
+        border-radius: 10px;
+        margin-top: 2rem;
+    }
+    
+    .star-rating {
+        display: flex;
+        gap: 5px;
+        margin-bottom: 1rem;
+    }
+    
+    .star-rating input {
+        display: none;
+    }
+    
+    .star-rating label {
+        font-size: 1.5rem;
+        color: #ddd;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+    
+    .star-rating input:checked ~ label,
+    .star-rating label:hover {
+        color: #ffc107;
+    }
+    
+    .breadcrumb-product {
+        background: none;
+        padding: 0;
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block breadcrumb %}
+<div class="bg-light border-bottom">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 py-2">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'home' %}" class="text-decoration-none">
+                        <i class="bi bi-house-door"></i> 首頁
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'product_list' %}" class="text-decoration-none">產品列表</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'product_list' %}?category={{ product.category }}" class="text-decoration-none">
+                        {{ product.get_category_display }}
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <!-- 產品圖片區域 -->
+        <div class="col-lg-6">
+            <div class="product-gallery position-relative">
+                <button class="wishlist-btn" id="wishlistBtn" data-product-id="{{ product.id }}">
+                    <i class="bi bi-heart"></i>
+                </button>
+                
+                <img src="https://via.placeholder.com/500x400/0d6efd/ffffff?text={{ product.name|truncatewords:1 }}" 
+                     class="main-image" id="mainImage" alt="{{ product.name }}">
+                
+                <div class="thumbnail-images">
+                    <img src="https://via.placeholder.com/80x80/0d6efd/ffffff?text=1" 
+                         class="thumbnail active" onclick="changeImage(this)" alt="圖片1">
+                    <img src="https://via.placeholder.com/80x80/6c757d/ffffff?text=2" 
+                         class="thumbnail" onclick="changeImage(this)" alt="圖片2">
+                    <img src="https://via.placeholder.com/80x80/28a745/ffffff?text=3" 
+                         class="thumbnail" onclick="changeImage(this)" alt="圖片3">
+                    <img src="https://via.placeholder.com/80x80/dc3545/ffffff?text=4" 
+                         class="thumbnail" onclick="changeImage(this)" alt="圖片4">
+                    <img src="https://via.placeholder.com/80x80/ffc107/ffffff?text=5" 
+                         class="thumbnail" onclick="changeImage(this)" alt="圖片5">
+                </div>
+            </div>
+        </div>
+        
+        <!-- 產品資訊區域 -->
+        <div class="col-lg-6">
+            <div class="product-info">
+                <h1 class="mb-3">{{ product.name }}</h1>
+                
+                <!-- 評分區塊 -->
+                <div class="rating-section">
+                    <div class="rating-stars">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= product.rating %}★{% else %}☆{% endif %}
+                        {% endfor %}
+                    </div>
+                    <span class="rating-text">{{ product.rating }}/5 ({{ product.review_count }} 則評論)</span>
+                    <a href="#reviews" class="text-primary text-decoration-none">查看評論</a>
+                </div>
+                
+                <!-- 產品標籤 -->
+                <div class="product-badges">
+                    {% if product.is_new %}
+                        <span class="badge bg-success">新品上市</span>
+                    {% endif %}
+                    {% if product.on_sale %}
+                        <span class="badge bg-danger">限時特價</span>
+                    {% endif %}
+                    {% if product.free_shipping %}
+                        <span class="badge bg-info">免運費</span>
+                    {% endif %}
+                    {% if product.stock < 10 %}
+                        <span class="badge bg-warning">庫存不足</span>
+                    {% endif %}
+                </div>
+                
+                <!-- 價格區塊 -->
+                <div class="price-section">
+                    <div class="d-flex align-items-center">
+                        {% if product.original_price and product.on_sale %}
+                            <span class="price-original">NT$ {{ product.original_price|floatformat:0 }}</span>
+                        {% endif %}
+                        <span class="price-current">NT$ {{ product.price|floatformat:0 }}</span>
+                        {% if product.on_sale %}
+                            <span class="badge bg-danger ms-2">省 NT$ {{ product.savings|floatformat:0 }}</span>
+                        {% endif %}
+                    </div>
+                    {% if product.stock > 0 %}
+                        <small class="text-muted">庫存：{{ product.stock }} 件</small>
+                    {% else %}
+                        <small class="text-danger">暫時缺貨</small>
+                    {% endif %}
+                </div>
+                
+                <!-- 產品描述 -->
+                <div class="mb-3">
+                    <p class="text-muted">{{ product.description }}</p>
+                </div>
+                
+                <!-- 產品規格選擇 -->
+                {% if product.has_variants %}
+                <div class="mb-3">
+                    <h6>選擇規格：</h6>
+                    <div class="btn-group" role="group" id="variantSelector">
+                        {% for variant in product.variants %}
+                        <input type="radio" class="btn-check" name="variant" id="variant{{ forloop.counter }}" 
+                               value="{{ variant.id }}" {% if forloop.first %}checked{% endif %}>
+                        <label class="btn btn-outline-primary" for="variant{{ forloop.counter }}">
+                            {{ variant.name }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- 數量選擇 -->
+                <div class="quantity-selector">
+                    <span>數量：</span>
+                    <button class="btn btn-outline-secondary btn-quantity" onclick="changeQuantity(-1)">-</button>
+                    <input type="number" class="form-control quantity-input" id="quantity" value="1" min="1" max="{{ product.stock }}">
+                    <button class="btn btn-outline-secondary btn-quantity" onclick="changeQuantity(1)">+</button>
+                </div>
+                
+                <!-- 操作按鈕 -->
+                <div class="product-actions">
+                    {% if product.stock > 0 %}
+                        <button class="btn btn-primary btn-lg" id="addToCartBtn">
+                            <i class="bi bi-cart-plus"></i> 加入購物車
+                        </button>
+                        <button class="btn btn-success btn-lg" id="buyNowBtn">
+                            <i class="bi bi-lightning"></i> 立即購買
+                        </button>
+                    {% else %}
+                        <button class="btn btn-secondary btn-lg" disabled>
+                            <i class="bi bi-x-circle"></i> 暫時缺貨
+                        </button>
+                        <button class="btn btn-outline-primary btn-lg" id="notifyBtn">
+                            <i class="bi bi-bell"></i> 到貨通知
+                        </button>
+                    {% endif %}
+                </div>
+                
+                <!-- 分享按鈕 -->
+                <div class="share-section">
+                    <h6>分享商品：</h6>
+                    <div class="share-buttons">
+                        <button class="btn btn-outline-primary" onclick="shareProduct('facebook')">
+                            <i class="bi bi-facebook"></i>
+                        </button>
+                        <button class="btn btn-outline-info" onclick="shareProduct('twitter')">
+                            <i class="bi bi-twitter"></i>
+                        </button>
+                        <button class="btn btn-outline-success" onclick="shareProduct('line')">
+                            <i class="bi bi-line"></i>
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="copyLink()">
+                            <i class="bi bi-link-45deg"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 產品詳細資訊區域 -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <!-- 標籤頁導航 -->
+            <ul class="nav nav-tabs" id="productTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="description-tab" data-bs-toggle="tab" 
+                            data-bs-target="#description" type="button" role="tab">
+                        <i class="bi bi-info-circle me-2"></i>產品說明
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="specs-tab" data-bs-toggle="tab" 
+                            data-bs-target="#specs" type="button" role="tab">
+                        <i class="bi bi-list-ul me-2"></i>規格表
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" 
+                            data-bs-target="#reviews" type="button" role="tab">
+                        <i class="bi bi-star me-2"></i>客戶評論 ({{ product.review_count }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="qa-tab" data-bs-toggle="tab" 
+                            data-bs-target="#qa" type="button" role="tab">
+                        <i class="bi bi-question-circle me-2"></i>常見問題
+                    </button>
+                </li>
+            </ul>
+            
+            <!-- 標籤頁內容 -->
+            <div class="tab-content" id="productTabsContent">
+                <!-- 產品說明 -->
+                <div class="tab-pane fade show active" id="description" role="tabpanel">
+                    <div class="p-4">
+                        <h4>產品特色</h4>
+                        <ul class="list-unstyled">
+                            {% for feature in product.features %}
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>{{ feature }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        
+                        <h4 class="mt-4">詳細描述</h4>
+                        <div class="text-muted">
+                            {{ product.detailed_description|linebreaks }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 規格表 -->
+                <div class="tab-pane fade" id="specs" role="tabpanel">
+                    <div class="product-specs">
+                        <table class="table table-striped">
+                            <tbody>
+                                {% for spec in product.specifications %}
+                                <tr>
+                                    <th>{{ spec.name }}</th>
+                                    <td>{{ spec.value }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- 客戶評論 -->
+                <div class="tab-pane fade" id="reviews" role="tabpanel">
+                    <div class="p-4">
+                        <!-- 評論統計 -->
+                        <div class="row mb-4">
+                            <div class="col-md-3 text-center">
+                                <div class="display-4 text-primary">{{ product.rating }}</div>
+                                <div class="rating-stars mb-2">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= product.rating %}★{% else %}☆{% endif %}
+                                    {% endfor %}
+                                </div>
+                                <small class="text-muted">基於 {{ product.review_count }} 則評論</small>
+                            </div>
+                            <div class="col-md-9">
+                                {% for rating in product.rating_breakdown %}
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="me-2">{{ rating.stars }}星</span>
+                                    <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                        <div class="progress-bar" style="width: {{ rating.percentage }}%"></div>
+                                    </div>
+                                    <span class="text-muted">{{ rating.count }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- 評論列表 -->
+                        {% for review in product.reviews %}
+                        <div class="review-item">
+                            <div class="reviewer-info">
+                                <img src="https://via.placeholder.com/50x50/{{ forloop.counter0|add:1 }}{{ forloop.counter0|add:1 }}{{ forloop.counter0|add:1 }}/ffffff?text={{ review.user.username|first }}" 
+                                     class="reviewer-avatar" alt="{{ review.user.username }}">
+                                <div>
+                                    <h6 class="mb-0">{{ review.user.get_full_name|default:review.user.username }}</h6>
+                                    <div class="rating-stars">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <small class="text-muted">{{ review.created_at|date:"Y年m月d日" }}</small>
+                                </div>
+                            </div>
+                            <p class="mt-2">{{ review.comment }}</p>
+                            
+                            {% if review.images %}
+                            <div class="review-images">
+                                {% for image in review.images %}
+                                <img src="{{ image.url }}" class="img-thumbnail me-2" 
+                                     style="width: 100px; height: 100px; object-fit: cover;" alt="評論圖片">
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            
+                            <div class="review-actions mt-2">
+                                <button class="btn btn-outline-primary btn-sm me-2">
+                                    <i class="bi bi-hand-thumbs-up"></i> 有用 ({{ review.helpful_count }})
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-flag"></i> 檢舉
+                                </button>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-chat-square-text display-4 text-muted"></i>
+                            <h5 class="mt-3">暫無評論</h5>
+                            <p class="text-muted">成為第一個評論此產品的人</p>
+                        </div>
+                        {% endfor %}
+                        
+                        <!-- 撰寫評論表單 -->
+                        {% if user.is_authenticated %}
+                        <div class="review-form">
+                            <h5>撰寫評論</h5>
+                            <form method="POST" action="{% url 'add_review' product.id %}" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label class="form-label">評分</label>
+                                    <div class="star-rating">
+                                        <input type="radio" name="rating" value="5" id="star5">
+                                        <label for="star5">★</label>
+                                        <input type="radio" name="rating" value="4" id="star4">
+                                        <label for="star4">★</label>
+                                        <input type="radio" name="rating" value="3" id="star3">
+                                        <label for="star3">★</label>
+                                        <input type="radio" name="rating" value="2" id="star2">
+                                        <label for="star2">★</label>
+                                        <input type="radio" name="rating" value="1" id="star1">
+                                        <label for="star1">★</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="comment" class="form-label">評論內容</label>
+                                    <textarea class="form-control" name="comment" id="comment" rows="4" 
+                                            placeholder="分享您的使用心得..." required></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="images" class="form-label">上傳圖片（可選）</label>
+                                    <input type="file" class="form-control" name="images" id="images" 
+                                           multiple accept="image/*">
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-send"></i> 提交評論
+                                </button>
+                            </form>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-4">
+                            <p class="text-muted">
+                                <a href="{% url 'login' %}" class="text-primary">登入</a> 後即可撰寫評論
+                            </p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- 常見問題 -->
+                <div class="tab-pane fade" id="qa" role="tabpanel">
+                    <div class="p-4">
+                        <div class="accordion" id="qaAccordion">
+                            {% for qa in product.faqs %}
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="qa{{ forloop.counter }}">
+                                    <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" 
+                                            type="button" data-bs-toggle="collapse" 
+                                            data-bs-target="#collapse{{ forloop.counter }}">
+                                        {{ qa.question }}
+                                    </button>
+                                </h2>
+                                <div id="collapse{{ forloop.counter }}" 
+                                     class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" 
+                                     data-bs-parent="#qaAccordion">
+                                    <div class="accordion-body">
+                                        {{ qa.answer }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 相關產品推薦 -->
+<section class="related-products">
+    <div class="container">
+        <h3 class="text-center mb-4">相關產品推薦</h3>
+        <div class="row">
+            {% for related_product in related_products %}
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card product-card">
+                    <img src="https://via.placeholder.com/250x200/{{ forloop.counter0|add:1 }}{{ forloop.counter0|add:1 }}{{ forloop.counter0|add:1 }}/ffffff?text={{ related_product.name|truncatewords:1 }}" 
+                         class="card-img-top" alt="{{ related_product.name }}">
+                    <div class="card-body">
+                        <h6 class="card-title">{{ related_product.name }}</h6>
+                        <div class="rating mb-2">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= related_product.rating %}★{% else %}☆{% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="price-current">NT$ {{ related_product.price|floatformat:0 }}</div>
+                        <a href="{% url 'product_detail' related_product.id %}" 
+                           class="btn btn-outline-primary btn-sm mt-2">查看詳情</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- 圖片放大覆蓋層 -->
+<div class="product-zoom-overlay" id="zoomOverlay">
+    <img id="zoomedImage" alt="放大圖片">
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 圖片切換功能
+        window.changeImage = function(thumbnail) {
+            document.querySelectorAll('.thumbnail').forEach(thumb => thumb.classList.remove('active'));
+            thumbnail.classList.add('active');
+            document.getElementById('mainImage').src = thumbnail.src.replace('80x80', '500x400');
+        };
+        
+        // 圖片縮放功能
+        document.getElementById('mainImage').addEventListener('click', function() {
+            document.getElementById('zoomedImage').src = this.src;
+            document.getElementById('zoomOverlay').style.display = 'flex';
+        });
+        
+        document.getElementById('zoomOverlay').addEventListener('click', function() {
+            this.style.display = 'none';
+        });
+        
+        // 數量調整
+        window.changeQuantity = function(change) {
+            const quantityInput = document.getElementById('quantity');
+            let currentValue = parseInt(quantityInput.value);
+            let newValue = currentValue + change;
+            
+            if (newValue >= 1 && newValue <= parseInt(quantityInput.max)) {
+                quantityInput.value = newValue;
+            }
+        };
+        
+        // 加入購物車
+        document.getElementById('addToCartBtn')?.addEventListener('click', function() {
+            const productId = {{ product.id }};
+            const quantity = document.getElementById('quantity').value;
+            const variant = document.querySelector('input[name="variant"]:checked')?.value;
+            
+            this.innerHTML = '<i class="bi bi-hourglass-split"></i> 加入中...';
+            this.disabled = true;
+            
+            // 模擬AJAX請求
+            setTimeout(() => {
+                this.innerHTML = '<i class="bi bi-check"></i> 已加入購物車';
+                this.classList.remove('btn-primary');
+                this.classList.add('btn-success');
+                
+                setTimeout(() => {
+                    this.innerHTML = '<i class="bi bi-cart-plus"></i> 加入購物車';
+                    this.classList.remove('btn-success');
+                    this.classList.add('btn-primary');
+                    this.disabled = false;
+                }, 2000);
+            }, 1000);
+        });
+        
+        // 立即購買
+        document.getElementById('buyNowBtn')?.addEventListener('click', function() {
+            // 跳轉到結帳頁面
+            window.location.href = '{% url "checkout" %}?product={{ product.id }}&quantity=' + document.getElementById('quantity').value;
+        });
+        
+        // 收藏功能
+        document.getElementById('wishlistBtn').addEventListener('click', function() {
+            this.classList.toggle('active');
+            const icon = this.querySelector('i');
+            if (this.classList.contains('active')) {
+                icon.className = 'bi bi-heart-fill';
+            } else {
+                icon.className = 'bi bi-heart';
+            }
+        });
+        
+        // 分享功能
+        window.shareProduct = function(platform) {
+            const url = encodeURIComponent(window.location.href);
+            const title = encodeURIComponent('{{ product.name }}');
+            const text = encodeURIComponent('{{ product.description|truncatewords:20 }}');
+            
+            let shareUrl = '';
+            switch(platform) {
+                case 'facebook':
+                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+                    break;
+                case 'twitter':
+                    shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${title}`;
+                    break;
+                case 'line':
+                    shareUrl = `https://social-plugins.line.me/lineit/share?url=${url}`;
+                    break;
+            }
+            
+            if (shareUrl) {
+                window.open(shareUrl, '_blank', 'width=600,height=400');
+            }
+        };
+        
+        // 複製連結
+        window.copyLink = function() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                alert('連結已複製到剪貼簿');
+            });
+        };
+        
+        // 星級評分互動
+        const starRating = document.querySelectorAll('.star-rating input');
+        starRating.forEach((input, index) => {
+            input.addEventListener('change', function() {
+                const labels = document.querySelectorAll('.star-rating label');
+                labels.forEach((label, labelIndex) => {
+                    if (labelIndex >= starRating.length - index - 1) {
+                        label.style.color = '#ffc107';
+                    } else {
+                        label.style.color = '#ddd';
+                    }
+                });
+            });
+        });
+        
+        // 到貨通知
+        document.getElementById('notifyBtn')?.addEventListener('click', function() {
+            if (confirm('商品到貨後將會發送通知給您，確定要設定通知嗎？')) {
+                this.innerHTML = '<i class="bi bi-check"></i> 已設定通知';
+                this.classList.remove('btn-outline-primary');
+                this.classList.add('btn-success');
+                this.disabled = true;
+            }
+        });
+    });
+</script>
+{% endblock %}
