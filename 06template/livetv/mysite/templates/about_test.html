@@ -1,10 +1,8 @@
 <!-- templates/about.html -->
-{% extends 'base.html' %}
-
-<!-- 頁面標題：將父模板（即 base.html）中 title 區塊的內容追加到「關於我們 - 」後面。 -->
-{% block title %}關於我們 - {{ block.super }}{% endblock %}
-
+{% extends 'base_test.html' %}
 {% block extra_css %}
+<!-- 額外CSS區塊 -->
+
 <style>
     .about-hero {
         background: linear-gradient(rgba(13, 110, 253, 0.8), rgba(13, 110, 253, 0.8)), 
@@ -91,10 +89,14 @@
         border-radius: 50%;
     }
 </style>
-{% endblock %}
+{% endblock extra_css %}    
 
 {% block content %}
-<!-- 關於我們英雄區塊 -->
+
+<!-- 主要內容區域 -->
+<main class="main-content">
+    
+    <!-- 關於我們英雄區塊 -->
 <section class="about-hero text-center">
     <div class="container">
         <h1 class="display-4 fw-bold mb-4">關於我們</h1>
@@ -123,7 +125,7 @@
             </div>
             <div class="col-lg-6 text-center">
                 <img src="https://via.placeholder.com/500x400/f8f9fa/6c757d?text=Company+Image" 
-                     class="img-fluid rounded shadow" alt="公司介紹">
+                class="img-fluid rounded shadow" alt="公司介紹">
             </div>
         </div>
     </div>
@@ -139,31 +141,11 @@
             </div>
         </div>
         <div class="row">
-            {% for member in team_members %}
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card team-card text-center h-100">
-                    <div class="card-body">
-                        <img src="https://via.placeholder.com/150x150/{{ forloop.counter0|add:1 }}{{ forloop.counter0|add:1 }}{{ forloop.counter0|add:1 }}/ffffff?text={{ member.name|first }}" 
-                             class="team-photo rounded-circle mx-auto d-block mb-3" alt="{{ member.name }}">
-                        <h5 class="card-title">{{ member.name }}</h5>
-                        <p class="text-primary fw-bold">{{ member.position }}</p>
-                        <p class="card-text">{{ member.description|default:"專業領域的資深專家，擁有豐富的實務經驗與創新思維。" }}</p>
-                        <div class="mt-3">
-                            <a href="#" class="btn btn-outline-primary btn-sm me-2">
-                                <i class="bi bi-linkedin"></i>
-                            </a>
-                            <a href="#" class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-envelope"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% empty %}
+            
             <div class="col-12 text-center">
                 <p class="text-muted">團隊成員資訊準備中...</p>
             </div>
-            {% endfor %}
+            
         </div>
     </div>
 </section>
@@ -241,4 +223,14 @@
         </div>
     </div>
 </section>
-{% endblock %}
+
+    </main>
+
+
+    {% endblock content %}
+    
+
+    
+    <!-- 額外JavaScript區塊 -->
+    
+

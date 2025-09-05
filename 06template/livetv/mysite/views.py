@@ -34,7 +34,7 @@ def home(request):
 
 def about(request):
     
-    return render(request, 'about_all.html', locals())
+    return render(request, 'about_test.html', locals())
     return render(request, 'about.html', locals())
 
 def services(request):
@@ -47,7 +47,7 @@ def contact(request):
     return render(request, 'contact.html', locals())
 
 def contact_all(request):
-    
+    return render(request, 'contact_test.html', locals())
     return render(request, 'contact_all.html', locals())
 
 def login(request):
