@@ -32,6 +32,28 @@ def fine_book_by_id(book_id):
             return book
     return None
 
+def get_reviews_by_book_id(book_id):
+    """根據書籍ID獲取評論列表"""
+    print(f"獲取ID為{book_id}的書籍評論...")
+    for review in REVIEWS_DATA:
+        if review['book_id'] == book_id:
+            return review
+    return None
+
+def find_category_by_id(category_id):
+    """根據ID尋找書籍類別"""
+    print(f"尋找ID為{category_id}的書籍類別...")
+    for category in CATEGORIES_DATA:
+        if category['id'] == category_id:
+            return category
+    return None
+
+def get_next_id(data_list):
+    """獲取下一個ID"""
+    if not data_list:
+        return 1
+    return max([item['id'] for item in data_list]) + 1
+
 def api_home(request):
     """API首頁"""
 
@@ -40,6 +62,11 @@ def api_home(request):
         'version': '1.0',
         'endpoints': {
             'books': '/api/books/?category=category_id&search=keyword',
+            'book': '/api/books/{book_id}/',
+            'categories': '/api/categories/',
+            'category': '/api/categories/{category_id}/',
+            'reviews': '/api/books/{book_id}/reviews/',
+            'review': '/api/books/{book_id}/reviews/{review_id}/',
         }
         })
 
@@ -143,3 +170,81 @@ def book_detail(request, book_id):
         })
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+@csrf_exempt
+def book_reviews(request, book_id):
+    """書籍評論端點
+    GET:
+    http://localhost:8000/api/books/1/reviews/
+    POST:
+    http://localhost:8000/api/books/1/reviews/
+    json:
+    {
+        "id": 3,
+        "book_id": 2,
+        "rating": 5,
+        "comment": "Django入門首選",
+        "user": "讀者C"
+    }
+
+    """
+
+    # 檢查書籍是否存在
+    book = fine_book_by_id(book_id)
+    if not book:
+        return JsonResponse({'error': 'Book not found'}, status=404)
+    
+    if request.method == 'GET':
+        reviews = get_reviews_by_book_id(book_id)
+        print(f'獲取ID為{book_id}的書籍評論...{reviews}',reviews)
+        return JsonResponse({
+            'book_title': book['title'],
+            'reviews': reviews
+        })
+    
+    elif request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            
+            new_review = {
+                'id': get_next_id(REVIEWS_DATA),
+                'book_id': book_id,
+                'rating': data.get('rating', 5),
+                'comment': data.get('comment', ''),
+                'user': data.get('user', 'Anonymous')
+            }
+            
+            REVIEWS_DATA.append(new_review)
+            return JsonResponse({
+                'message': 'Review added successfully',
+                'review': new_review
+            })
+            
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+        
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+def categories_list(request):
+    """分類列表端點
+    http://localhost:8000/api/categories/
+    """
+    return JsonResponse({'categories': CATEGORIES_DATA})
+
+def category_detail(request, category_id):
+    """特定分類書籍端點
+    http://localhost:8000/api/categories/1/
+    """
+    category = find_category_by_id(category_id)
+    if not category:
+        return JsonResponse({'error': 'Category not found'}, status=404)
+    
+    # 取得該分類的書籍
+    books = [book for book in BOOKS_DATA if book['category_id'] == category_id]
+    
+    return JsonResponse({
+        'category': category,
+        'books_count': len(books),
+        'books': books
+    })
