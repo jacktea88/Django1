@@ -26,6 +26,7 @@ REVIEWS_DATA = [
 # ===== 輔助函數 =====
 def fine_book_by_id(book_id):
     """根據ID尋找書籍"""
+    print(f"尋找ID為{book_id}的書籍...")
     for book in BOOKS_DATA:
         if book['id'] == book_id:
             return book
@@ -98,3 +99,47 @@ def books_list(request):
 
         # return JsonResponse({'books': BOOKS_DATA})
     
+@csrf_exempt
+def book_detail(request, book_id):
+    """單本書籍詳細資訊端點
+    GET:
+    http://localhost:8000/api/books/1/
+    PUT:
+    http://localhost:8000/api/books/1/ 
+    json:
+    {"id": 6, "title": "Python\u7a0b\u5f0f\u8a2d\u8a08", "author": "\u738b\u5c0f\u660e", "price": 1000, "category_id": 1}
+    DELETE:
+    http://localhost:8000/api/books/1/
+    
+    """
+    book = fine_book_by_id(book_id)
+    if not book:
+        return JsonResponse({'error': 'Book not found'}, status=404)
+    
+    if request.method == 'GET':
+        return JsonResponse({'book': book})
+    
+    elif request.method == 'PUT': #注意測試時!!!!!網址id要正確，網址最後要有斜線!!!!!
+        try:
+            data = json.loads(request.body)
+            
+            # 更新書籍資料
+            book.update(data)
+            
+            return JsonResponse({
+                'message': 'Book updated successfully',
+                'book': book
+            })
+            
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+        
+    elif request.method == 'DELETE':
+        # 刪除書籍資料
+        BOOKS_DATA.remove(book)
+        return JsonResponse({
+            'message': 'Book deleted successfully',
+            'book': book
+        })
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
