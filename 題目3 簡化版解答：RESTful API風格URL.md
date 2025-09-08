@@ -169,7 +169,7 @@ def api_home(request):
         'message': 'Welcome to Bookstore API',
         'version': '1.0',
         'endpoints': {
-            'books': '/api/books/',
+            'books': '/api/books/?category=category_id&search=keyword',
             'categories': '/api/categories/',
             'authors': '/api/authors/',
             'cart': '/api/cart/',
@@ -180,7 +180,15 @@ def api_home(request):
 
 @csrf_exempt
 def books_list(request):
-    """書籍列表端點"""
+    """書籍列表端點
+    # get
+    # http://127.0.0.1:8000/api/books/?category=1
+    # http://127.0.0.1:8000/api/books/?search=王小明
+
+    # post
+    # http://localhost:8000/api/books/
+    {"id": 1, "title": "Python\u7a0b\u5f0f\u8a2d\u8a08", "author": "\u738b\u5c0f\u660e", "price": 900, "category_id": 1}
+    """
     if request.method == 'GET':
         # 處理查詢參數
         category = request.GET.get('category')

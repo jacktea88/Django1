@@ -42,9 +42,18 @@ def api_home(request):
         }
         })
 
-
+@csrf_exempt
 def books_list(request):
-    """書籍列表頁面"""
+    """書籍列表端點
+    # get
+    # http://127.0.0.1:8000/api/books/?category=1
+    # http://127.0.0.1:8000/api/books/?search=王小明
+
+    # post
+    # http://localhost:8000/api/books/
+    {"id": 1, "title": "Python\u7a0b\u5f0f\u8a2d\u8a08", "author": "\u738b\u5c0f\u660e", "price": 900, "category_id": 1}
+    """
+    books = BOOKS_DATA.copy()
     if request.method == 'GET':
         category = request.GET.get('category')
         search = request.GET.get('search')
@@ -65,6 +74,27 @@ def books_list(request):
             'count': len(books),
             'books': books
             })
+    elif request.method == 'POST':
+        
+        try:
+            data = json.loads(request.body)
+            book = {
+                'id': len(books) + 1,
+                'title': data['title'],
+                'author': data['author'],
+                'price': data['price'],
+                'category_id': data['category_id']
+            }
+            BOOKS_DATA.append(book)
+            return JsonResponse({
+                'status': 'success', 
+                'message': 'Book added successfully',
+                'book': book})  #注意，列出新加入的書籍就好
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON data'}, status=400)
 
-        return JsonResponse({'books': BOOKS_DATA})
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+        # return JsonResponse({'books': BOOKS_DATA})
     
