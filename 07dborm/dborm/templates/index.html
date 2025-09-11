@@ -3,13 +3,28 @@
 {% block content %}
 <div class='container' align=center>
     {% for p in products %}
+    {% if forloop.first %}
     <table>
-        <tr><td align=center><h3>{{ p.nickname }}</h3></td></tr>
-        <tr><td align=center><img src='/media/{{ p.images.first.media }}' width=350></td></tr>
-        <tr><td align=center>{{ p.description }}</td></tr>
-        <tr><td align=center>西元{{ p.year }}年出廠</td></tr>
-        <tr><td align=center>售價：NT${{ p.price }}元</td></tr>
+        <tr bgcolor='#cccccc'>
+            <td width=250>庫存手機</td>
+            <td width=150>廠牌/型號</td>
+            <td width=50>出廠年</td>
+            <td>價格</td></tr>
+    {% endif %}
+        <tr bgcolor='{% cycle "#ffccff" "ccffcc" %}'>
+            <td><a href='{% url "detail-url" p.id %}'>{{ p.nickname }}</a></td>
+            {% comment %} <td>{{ p.pmodel.maker.name }}/{{ p.pmodel }}</td> {% endcomment %}
+            <td>{{ p.pmodel.maker.name }}/{{ p.pmodel.name }}</td>
+            <td>{{ p.year  }}</td>
+            <td align=right>{{ p.price }}</td>
+        </tr>
+    {% if forloop.last %}
     </table>
+    {% endif %}
+
+    {% empty %}
+    <h3>目前沒有庫存的中古機可以賣，真抱歉</h3>
+
     {% endfor %}
 </div>
 {% endblock %}
