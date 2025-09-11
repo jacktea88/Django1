@@ -33,4 +33,7 @@ urlpatterns = [
     path('contactall/', views.contact_all, name='contact_all'),
     path('login/', views.login, name='login'),
     path('register/', views.register, name='register'),
+    # car list
+    path('carlist/', views.carlist, name='carlist'),
+    path('carlist/<int:maker>', views.carlist, name='carlist-url'),
 ]
