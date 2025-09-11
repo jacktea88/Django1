@@ -6,6 +6,9 @@
 
 {% block content %}
 <div class="container-fluid">
+    {% if hour > 12 %}<h2>午安</h2>
+    {% else %}<h2>早安</h2>
+    {% endif %}
     <div>
         <iframe src="https://www.youtube.com/embed/{{ tv.tvcode }}" frameborder="0"></iframe>
     </div>
