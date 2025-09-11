@@ -1,11 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>中古手機</title>
-</head>
-<body>
-    <h2>中古手機</h2>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}DJ中古機賣場{% endblock %}
+{% block content %}
+<div class='container' align=center>
+    {% for p in products %}
+    <table>
+        <tr><td align=center><h3>{{ p.nickname }}</h3></td></tr>
+        <tr><td align=center><img src='/media/{{ p.images.first.media }}' width=350></td></tr>
+        <tr><td align=center>{{ p.description }}</td></tr>
+        <tr><td align=center>西元{{ p.year }}年出廠</td></tr>
+        <tr><td align=center>售價：NT${{ p.price }}元</td></tr>
+    </table>
+    {% endfor %}
+</div>
+{% endblock %}
