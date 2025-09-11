@@ -36,4 +36,7 @@ urlpatterns = [
     # car list
     path('carlist/', views.carlist, name='carlist'),
     path('carlist/<int:maker>', views.carlist, name='carlist-url'),
+    # car price
+    path('carprice/', views.carprice, name='carprice'),
+    path('carprice/<int:maker>', views.carprice, name='carprice-url'),
 ]

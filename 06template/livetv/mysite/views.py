@@ -76,3 +76,22 @@ def carlist(request, maker=0):
     maker_name =  car_maker[maker]
     cars = car_list[maker]
     return render(request, 'carlist.html', locals())    
+
+# car price
+def carprice(request, maker=0):
+    car_maker = ['Ford', 'Honda', 'Mazda']
+    car_list = [[   {'model':'Fiesta', 'price': 203500}, 
+                    {'model':'Focus','price': 605000}, 
+                    {'model':'Mustang','price': 900000}],
+                [   {'model':'Fit', 'price': 450000}, 
+                    {'model':'City', 'price': 150000}, 
+                    {'model':'NSX', 'price':1200000}],
+                [   {'model':'Mazda3', 'price': 329999}, 
+                    {'model':'Mazda5', 'price': 603000},
+                    {'model':'Mazda6', 'price':850000}],
+              ]
+    maker = maker
+    maker_name =  car_maker[maker]
+    cars = car_list[maker]
+    return render(request, 'carprice.html', locals())
+
