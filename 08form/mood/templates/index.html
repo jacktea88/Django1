@@ -2,7 +2,8 @@
 {% block title %}心情留言板{% endblock %}
 {% block content %}
 <div class='container' align=center>
-    <form action="/" method="POST">
+    <form action="/" method="GET">
+        {% csrf_token %}
         <label for="user_id">Your ID</label>
         <input type="text" name="user_id" id="user_id">
         <label for="user_pass">Your Password</label>
@@ -10,5 +11,11 @@
         <input type="submit" value="登入">
         <input type="reset" value="清除重填">
     </form>
+    {% if verified %}
+    <em>登入成功</em>
+    {% else %}
+    <em>登入失敗</em>
+    {% endif %}
 </div>
+
 {% endblock %}
