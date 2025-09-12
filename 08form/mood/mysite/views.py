@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from mysite import models
 
 # Create your views here.
@@ -42,3 +42,20 @@ def index(request):
         message = '無效的帳號'
     # print(user_id, user_pass, user_post, user_mood)    
     return render(request, 'index_post.html', locals())
+
+def delpost(request, post_id=None, del_pass=None):
+    if del_pass and post_id:
+        try:
+            post = models.Post.objects.get(id = post_id)
+            if post.del_pass == del_pass:
+                post.delete()
+                message = '刪除成功'
+                print('刪除成功')
+            else:
+                message = '密碼錯誤'
+                print('密碼錯誤')
+        except:
+            message = '找不到貼文'
+            print('找不到貼文')
+    return redirect('/')
+    

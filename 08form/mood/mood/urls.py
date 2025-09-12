@@ -21,4 +21,5 @@ from mysite import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='home'),
+    path('delpost/<int:post_id>/<str:del_pass>/', views.delpost, name='delpost'),
 ]

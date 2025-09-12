@@ -181,7 +181,13 @@
             });
         });
 
-
+        function go_delete(id) {
+            var user_pass = document.getElementById('user_pass').value;
+            if (user_pass != "") {
+                var usr = '/delpost/' + id + '/' + user_pass + '/';
+                window.location = usr;
+            }
+        }
     </script>
 </body>
 </html>
