@@ -88,8 +88,23 @@ def contact(request):
         form = forms.ContactForm()
     return render(request, 'contact.html', locals())
 
+# def post2db(request):
+#     post_form = forms.PostForm()
+#     moods = models.Mood.objects.all()
+#     message = '每一欄都要填寫'
+#     return render(request, 'post2db.html', locals())
+
 def post2db(request):
     post_form = forms.PostForm()
-    moods = models.Mood.objects.all()
-    message = '每一欄都要填寫'
+    if request.method == 'POST':
+        post_form = forms.PostForm(request.POST)
+        if post_form.is_valid():
+            post_form.save()
+            message = '張貼成功'
+            return redirect('/')
+        else:
+            message = '每一欄都要填寫'
+    else:
+        post_form = forms.PostForm()
+        message = '每一欄都要填寫'
     return render(request, 'post2db.html', locals())
