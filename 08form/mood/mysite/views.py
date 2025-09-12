@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from mysite import models, forms
+from django.core.mail import EmailMessage
+from django.conf import settings
 
 
 # Create your views here.
@@ -75,6 +77,10 @@ def contact(request):
             user_message = form.cleaned_data['user_message']
             messages = '您的意見已傳送給我們'
             print(messages)
+            mail_body = '姓名: %s\n城市: %s\n是否在學: %s\n電子郵件: %s\n意見: %s' % (user_name, user_city, user_school, user_email, user_message)
+            email = EmailMessage('來自網站的意見', mail_body, settings.EMAIL_HOST_USER, [user_email])
+            email.send()
+            # print(settings.EMAIL_HOST_USER)
         else:
             messages = '請檢查您的輸入'
             print(messages)
