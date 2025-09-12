@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
-from mysite import models
+from mysite import models, forms
+
 
 # Create your views here.
 # def index(request):
@@ -62,4 +63,21 @@ def delpost(request, post_id=None, del_pass=None):
             message = '找不到貼文'
             print('找不到貼文')
     return redirect('/')
-    
+
+def contact(request):
+    if request.method == 'POST':
+        form = forms.ContactForm(request.POST)
+        if form.is_valid():
+            user_name = form.cleaned_data['user_name']
+            user_city = form.cleaned_data['user_city']
+            user_school = form.cleaned_data['user_school']
+            user_email = form.cleaned_data['user_email']
+            user_message = form.cleaned_data['user_message']
+            messages = '您的意見已傳送給我們'
+            print(messages)
+        else:
+            messages = '請檢查您的輸入'
+            print(messages)
+    else:   # GET
+        form = forms.ContactForm()
+    return render(request, 'contact.html', locals())
