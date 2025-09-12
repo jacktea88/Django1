@@ -4,6 +4,19 @@
 <div class='container' align=center>
     <form action="/" method="GET">
         {% csrf_token %}
+        <label for="byear">Your Birthyear</label>
+        <select name="byear" id="byear">
+            {% for year in years %}
+            <option value="{{ year }}">{{ year }}</option>
+            {% endfor %}
+        </select> 
+        <br>
+        <input type="checkbox" name="fcolor" id="" value="red">red
+        <input type="checkbox" name="fcolor" id="" value="blue">blue
+        <input type="checkbox" name="fcolor" id="" value="green">green
+        <input type="checkbox" name="fcolor" id="" value="yellow">yellow
+        <input type="checkbox" name="fcolor" id="" value="orange">orange
+        <br>       
         <label for="user_id">Your ID</label>
         <input type="text" name="user_id" id="user_id">
         <label for="user_pass">Your Password</label>
@@ -11,6 +24,11 @@
         <input type="submit" value="登入">
         <input type="reset" value="清除重填">
     </form>
+    <em>出生年份:{{ user_byear }}</em><br>
+    <em>喜好顏色:</em>
+    {% for color in urfcolor %}{{ color }}{% endfor %}<br>
+    <em>使用者名稱:{{ user_id }}</em><br>
+    <em>使用者密碼:{{ user_pass }}</em><br>
     {% if verified %}
     <em>登入成功</em>
     {% else %}
