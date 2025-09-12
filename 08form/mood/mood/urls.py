@@ -23,4 +23,5 @@ urlpatterns = [
     path('', views.index, name='home'),
     path('delpost/<int:post_id>/<str:del_pass>/', views.delpost, name='delpost'),
     path('contact/', views.contact, name='contact'),
+    path('post2db/', views.post2db, name='post2db'),
 ]

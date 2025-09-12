@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-    聯絡我們
+    心情留言板
 {% endblock title %}
 
 {% block content %}
@@ -9,23 +9,23 @@
         {% if message %}
             <div class="alert alert-warning">{{ message }}</div>
         {% endif %}
-
-        {{ user_name }} {{ user_city }} {{ user_school }} {{ user_email }}<br>
-        {{ user_message | linebreaks }}
-        
-        <br/>
         
         <div class="card">
             <div class="card-header">
                 <form name="contact_form" action="." method="POST">
                     {% csrf_token %}
-                    <h3>寫信給管理員</h3>
+                    <h3>我有話要說</h3>
             </div>
             <div class="card-body">
-                {{ form.as_p }}
+                <table>
+                    {% comment %} {{ post_form.as_p }} {% endcomment %}
+                    {{ post_form.as_table }}
+
+                </table>
             </div>
             <div class="card-footer">
-                <input type="submit" value="送出">
+                <input type="submit" value="張貼">
+                <input type="reset" value="清除重填">
                 </form>
             </div>
         </div>

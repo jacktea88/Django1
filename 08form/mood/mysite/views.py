@@ -75,15 +75,21 @@ def contact(request):
             user_school = form.cleaned_data['user_school']
             user_email = form.cleaned_data['user_email']
             user_message = form.cleaned_data['user_message']
-            messages = '您的意見已傳送給我們'
-            print(messages)
+            message = '您的意見已傳送給我們'
+            print(message)
             mail_body = '姓名: %s\n城市: %s\n是否在學: %s\n電子郵件: %s\n意見: %s' % (user_name, user_city, user_school, user_email, user_message)
             email = EmailMessage('來自網站的意見', mail_body, settings.EMAIL_HOST_USER, [user_email])
             email.send()
             # print(settings.EMAIL_HOST_USER)
         else:
-            messages = '請檢查您的輸入'
-            print(messages)
+            message = '請檢查您的輸入'
+            print(message)
     else:   # GET
         form = forms.ContactForm()
     return render(request, 'contact.html', locals())
+
+def post2db(request):
+    post_form = forms.PostForm()
+    moods = models.Mood.objects.all()
+    message = '每一欄都要填寫'
+    return render(request, 'post2db.html', locals())
