@@ -7,7 +7,9 @@
         {{ message }}<br><br>
     </div>
     {% endif %}
-    <form action="/" method="GET">
+    {% comment %} <form action="/" method="GET"> {% endcomment %}
+    <form action="/" method="POST">
+        {% csrf_token %}
         現在的心情：<br>
         {% for m in moods %}
         <input type='radio' name='mood' value='{{ m.status }}'>{{ m.status }}

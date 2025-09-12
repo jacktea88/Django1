@@ -25,10 +25,14 @@ def index(request):
     posts = models.Post.objects.all().order_by('-pub_time')
     moods = models.Mood.objects.all()
     try:
-        user_id = request.GET['user_id']
-        user_pass = request.GET['user_pass']
-        user_post = request.GET['user_post']
-        user_mood = request.GET['mood']
+        user_id = request.POST['user_id']
+        user_pass = request.POST['user_pass']
+        user_post = request.POST['user_post']
+        user_mood = request.POST['mood']
+        # user_id = request.GET['user_id']
+        # user_pass = request.GET['user_pass']
+        # user_post = request.GET['user_post']
+        # user_mood = request.GET['mood']
 
     except:
         user_id = None
