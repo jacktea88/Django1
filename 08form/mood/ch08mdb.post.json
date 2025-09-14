@@ -1,0 +1,32 @@
+[{
+  "_id": {
+    "$oid": "6790616eaf3262662fea3562"
+  },
+  "name": "jack",
+  "height": "170",
+  "weight": "60"
+},
+{
+  "_id": {
+    "$oid": "679062683990da561a96ef92"
+  },
+  "name": "mary",
+  "height": "150",
+  "weight": "40"
+},
+{
+  "_id": {
+    "$oid": "68c6d6f8d46bfaf457ef5694"
+  },
+  "name": "mindy",
+  "height": "155",
+  "weight": "45"
+},
+{
+  "_id": {
+    "$oid": "68c6d7a1d46bfaf457ef5695"
+  },
+  "name": "bob",
+  "height": "175",
+  "weight": "75"
+}]
