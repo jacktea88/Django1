@@ -77,7 +77,14 @@ def contact(request):
             user_message = form.cleaned_data['user_message']
             message = '您的意見已傳送給我們'
             print(message)
-            mail_body = '姓名: %s\n城市: %s\n是否在學: %s\n電子郵件: %s\n意見: %s' % (user_name, user_city, user_school, user_email, user_message)
+            mail_body = (
+                            f'姓名: {user_name}\n'
+                            f'城市: {user_city}\n'
+                            f'是否在學: {user_school}\n'
+                            f'電子郵件: {user_email}\n'
+                            f'意見: {user_message}'
+                        )
+            # mail_body = '姓名: %s\n城市: %s\n是否在學: %s\n電子郵件: %s\n意見: %s' % (user_name, user_city, user_school, user_email, user_message)
             email = EmailMessage('來自網站的意見', mail_body, settings.EMAIL_HOST_USER, [user_email])
             email.send()
             # print(settings.EMAIL_HOST_USER)
