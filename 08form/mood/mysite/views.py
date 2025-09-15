@@ -115,3 +115,29 @@ def post2db(request):
         post_form = forms.PostForm()
         message = '每一欄都要填寫'
     return render(request, 'post2db.html', locals())
+
+def bmi(request):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    collections = client["ch08mdb"]["bodyinfo"] #[資料庫名稱].[集合(資料表)名稱]
+    if request.method=="POST":
+        name = request.POST.get("name").strip()
+        height = request.POST.get("height").strip()
+        weight = request.POST.get("weight").strip()
+        collections.insert_one({
+            "name": name,
+            "height": height,
+            "weight": weight
+        })
+        return redirect("/bmi/")
+    else:
+        records = collections.find()
+        data = list()
+        for rec in records:
+            t = dict()
+            t['name'] = rec['name']
+            t['height'] = rec['height']
+            t['weight'] = rec['weight']
+            t['bmi'] = round(float(t['weight'])/(int(t['height'])/100)**2, 2)
+            data.append(t)
+
+    return render(request, "bmi.html", locals())
