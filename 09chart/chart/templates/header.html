@@ -55,7 +55,7 @@
 
                 <!-- 使用者狀態區域 -->
                 <div class="user-info">
-                    {% if user.is_authenticated %}
+                    {% if username %}
                         <!-- 已登入使用者 -->
                         <div class="dropdown">
                             <a class="btn btn-outline-primary dropdown-toggle d-flex align-items-center" 
@@ -74,37 +74,37 @@
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <a class="dropdown-item" href="#">
+                                    <a class="dropdown-item" href="/userinfo/">
                                         <i class="bi bi-person me-2"></i>個人資料
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="#">
-                                        <i class="bi bi-gear me-2"></i>帳號設定
+                                    <a class="dropdown-item" href="/post/">
+                                        <i class="bi bi-gear me-2"></i>寫日記
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="#">
-                                        <i class="bi bi-clock-history me-2"></i>訂單記錄
+                                    <a class="dropdown-item" href="/contact/">
+                                        <i class="bi bi-clock-history me-2"></i>連絡管理員
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
-                                {% comment %} <li>
-                                    <a class="dropdown-item text-danger" href="{% url 'logout' %}">
+                                 <li>
+                                    <a class="dropdown-item text-danger" href="/logout/">
                                         <i class="bi bi-box-arrow-right me-2"></i>登出
                                     </a>
-                                </li> {% endcomment %}
+                                </li> 
                             </ul>
                         </div>
                     {% else %}
                         <!-- 未登入使用者 -->
                         <div class="d-flex gap-2">
-                            {% comment %} <a href="{% url 'login' %}" class="btn btn-outline-primary">
+                            <a href="/login/" class="btn btn-outline-primary">
                                 <i class="bi bi-box-arrow-in-right me-1"></i>登入
                             </a>
-                            <a href="{% url 'register' %}" class="btn btn-primary">
+                            <a href="/register/" class="btn btn-primary">
                                 <i class="bi bi-person-plus me-1"></i>註冊
-                            </a> {% endcomment %}
+                            </a> 
                         </div>
                     {% endif %}
                 </div>

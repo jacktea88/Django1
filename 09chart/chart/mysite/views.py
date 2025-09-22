@@ -1,4 +1,5 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, redirect
+from mysite import models, forms
 from mysite.models import Vote, Temperature
 from plotly.offline import plot
 import plotly.graph_objs as go
@@ -6,15 +7,48 @@ import plotly.graph_objs as go
 from django.views.decorators.csrf import csrf_exempt
 import json
 
+# 測試cookie是否啟用
+# def index(request):
+#     if request.session.test_cookie_worked():
+#         request.session.delete_test_cookie()
+#         message = 'Cookie 已成功啟用'
+#     else:
+#         message = 'Cookie 啟用失敗'
+#         request.session.set_test_cookie()
+#     return render(request, 'index.html', locals())
+
+# 檢查'username'有沒有存在於Session中, 如果有就把username以及useremail都取出來
 def index(request):
-    if request.session.test_cookie_worked():
-        request.session.delete_test_cookie()
-        message = 'Cookie 已成功啟用'
+    if 'username' in request.session and request.session['username'] != None:
+        username = request.session['username']
+        useremail = request.session['useremail']
+        print('username:in index', username)
     else:
-        message = 'Cookie 啟用失敗'
-        request.session.set_test_cookie()
+        print('username不存在')
     return render(request, 'index.html', locals())
 
+def login(request):
+    if request.method == 'POST':
+        login_form = forms.LoginForm(request.POST)
+        if login_form.is_valid():
+            login_name=request.POST['username'].strip()
+            login_password=request.POST['password']
+            print('login_name:', login_name)
+            try:
+                user = models.User.objects.get(name=login_name)
+                if user.password == login_password:
+                    request.session['username'] = login_name
+                    request.session['useremail'] = user.email
+                    return redirect('/')
+                else:
+                    message = '密碼錯誤'
+            except:
+                message = '找不到使用者'
+        else:
+            message = '請檢查輸入的欄位內容'
+    else:   # GET
+        login_form = forms.LoginForm()
+    return render(request, 'login.html', locals())
 
 # Create your views here.
 def votes(request):
