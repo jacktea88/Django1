@@ -3,9 +3,12 @@
 {% block title %}我的私人日記{% endblock %}
 {% block content %}
 <div class='container'>
-{% if message %}
+{% comment %} {% if message %}
     <div class='alert alert-danger'>{{ message }}</div>
-{% endif %}
+{% endif %} {% endcomment %}
+{% for message in messages %}
+    <div class='alert alert-{{message.tags}}'>{{ message }}</div>
+{% endfor %}
     <div class='row'>
         <div class='col-md-12'>
                     <h3 class="alert alert-primary">{{ username | default:"我"}}的私人日記</h3>

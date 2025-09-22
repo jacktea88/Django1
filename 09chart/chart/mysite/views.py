@@ -1,6 +1,7 @@
 from django.shortcuts import render, HttpResponse, redirect
 from mysite import models, forms
 from django.contrib.sessions.models import Session
+from django.contrib import messages
 
 from mysite.models import Vote, Temperature
 from plotly.offline import plot
@@ -43,11 +44,14 @@ def login(request):
                     request.session['useremail'] = user.email
                     return redirect('/')
                 else:
-                    message = '密碼錯誤'
+                    # message = '密碼錯誤'
+                    messages.warning(request, '密碼錯誤')
             except:
-                message = '找不到使用者'
+                # message = '找不到使用者'
+                messages.warning(request, '找不到使用者')
         else:
-            message = '請檢查輸入的欄位內容'
+            # message = '請檢查輸入的欄位內容'
+            messages.warning(request, '請檢查輸入的欄位內容')
     else:   # GET
         login_form = forms.LoginForm()
     return render(request, 'login.html', locals())
