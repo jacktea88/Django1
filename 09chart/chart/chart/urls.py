@@ -18,6 +18,11 @@ from django.contrib import admin
 from django.urls import path
 from mysite.views import votes, plotly, plotly_api, mqtt_show, plotly_mqtt, index, login, logout, userinfo
 
+# 設定admin登入頁面標題
+admin.site.site_header = '我的網站header'
+admin.site.site_title = '我的網站site title'
+admin.site.index_title = '後台管理index title'
+
 urlpatterns = [
     path('', index, name='home'),
     path('login/', login, name='index'),
