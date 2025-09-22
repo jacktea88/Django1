@@ -61,6 +61,21 @@ def logout(request):
         # del request.session['useremail']
     return redirect('/')
 
+def userinfo(request):
+    if 'username' in request.session:
+        username = request.session['username']
+        useremail = request.session['useremail']
+        print('username:in userinfo', username)
+    else:
+        print('username不存在')
+        return redirect('/login/')
+    try:
+        userinfo = models.User.objects.get(name=username)
+    except Exception as e:
+        print(e)
+        pass
+    return render(request, 'userinfo.html', locals())
+
 # Create your views here.
 def votes(request):
     data = Vote.objects.all()

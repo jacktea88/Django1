@@ -1,0 +1,20 @@
+<!-- index.html (dj4ch09 project) -->
+{% extends "base.html" %}
+{% block title %}我的私人日記{% endblock %}
+{% block content %}
+<div class='container'>
+{% if message %}
+    <div class='alert alert-danger'>{{ message }}</div>
+{% endif %}
+    <div class='row'>
+        <div class='col-md-12'>
+                    <h3 class="alert alert-primary">{{ username | default:"我"}}的資訊</h3>
+        </div>
+    </div>
+    {% if userinfo %}
+    您的姓名:{{ userinfo.name }}<br/>
+    電子郵件:{{ userinfo.email }}
+    {% endif %}
+    
+</div>
+{% endblock %}
