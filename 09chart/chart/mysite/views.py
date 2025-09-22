@@ -6,6 +6,10 @@ import plotly.graph_objs as go
 from django.views.decorators.csrf import csrf_exempt
 import json
 
+def index(request):
+    return render(request, 'index.html', locals())
+
+
 # Create your views here.
 def votes(request):
     data = Vote.objects.all()

@@ -16,9 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from mysite.views import votes, plotly, plotly_api, mqtt_show, plotly_mqtt
+from mysite.views import votes, plotly, plotly_api, mqtt_show, plotly_mqtt, index
 
 urlpatterns = [
+    path('', index, name='home'),
     path('admin/', admin.site.urls),
     path('votes/', votes, name='votes'),
     path('plotly/', plotly, name='plotly'),
