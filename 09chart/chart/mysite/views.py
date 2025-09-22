@@ -1,5 +1,7 @@
 from django.shortcuts import render, HttpResponse, redirect
 from mysite import models, forms
+from django.contrib.sessions.models import Session
+
 from mysite.models import Vote, Temperature
 from plotly.offline import plot
 import plotly.graph_objs as go
@@ -49,6 +51,15 @@ def login(request):
     else:   # GET
         login_form = forms.LoginForm()
     return render(request, 'login.html', locals())
+
+def logout(request):
+    if 'username' in request.session:
+
+        Session.objects.all().delete()
+        # 指定刪除的session寫法
+        # del request.session['username']
+        # del request.session['useremail']
+    return redirect('/')
 
 # Create your views here.
 def votes(request):
