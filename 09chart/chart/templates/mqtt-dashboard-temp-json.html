@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MQTT 控制台 - Temperature & Control Dashboard</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- MQTT.js client -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/4.3.7/mqtt.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        .card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .temperature-display {
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+        }
+        
+        .control-button {
+            height: 80px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .control-button:hover {
+            transform: scale(1.05);
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .status-connected {
+            background-color: #28a745;
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+        }
+        
+        .status-disconnected {
+            background-color: #dc3545;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .chart-container {
+            height: 300px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-thermometer-half me-2"></i>
+                MQTT 控制台
+            </a>
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item">
+                    <span class="nav-link">
+                        <span id="connectionIndicator" class="status-indicator status-disconnected"></span>
+                        <span id="connectionText">未連接</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <!-- MQTT Connection Panel -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <h5 class="mb-0">
+                            <i class="bi bi-wifi me-2"></i>
+                            MQTT 連接設定
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label for="mqttBroker" class="form-label fw-semibold">Broker 地址</label>
+                                <input type="text" class="form-control" id="mqttBroker" value="broker.mqttgo.io" placeholder="broker.mqttgo.io">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="mqttPort" class="form-label fw-semibold">端口</label>
+                                <input type="number" class="form-control" id="mqttPort" value="8084" placeholder="8084">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="tempTopic" class="form-label fw-semibold">溫度主題</label>
+                                <input type="text" class="form-control" id="tempTopic" value="sensors/temperature" placeholder="sensors/temperature">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="controlTopic" class="form-label fw-semibold">控制主題</label>
+                                <input type="text" class="form-control" id="controlTopic" value="devices/switch" placeholder="devices/switch">
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button id="connectBtn" class="btn btn-primary w-100 fw-semibold">
+                                    <i class="bi bi-plug me-1"></i>
+                                    連接
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Row -->
+        <div class="row mb-4">
+            <!-- Temperature Display -->
+            <div class="col-lg-4 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-thermometer-half me-2"></i>
+                            目前溫度
+                        </h5>
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-center">
+                        <div class="text-center mb-3">
+                            <div class="temperature-display" id="currentTemp">--</div>
+                            <div class="fs-3 text-muted">°C</div>
+                        </div>
+                        <div class="text-center">
+                            <span id="tempStatus" class="badge bg-secondary fs-6 px-3 py-2">等待數據中...</span>
+                        </div>
+                        <div class="mt-3 text-center">
+                            <small class="text-muted">最後更新: <span id="lastUpdate">--</span></small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Control Panel -->
+            <div class="col-lg-4 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">
+                            <i class="bi bi-toggles me-2"></i>
+                            設備控制
+                        </h5>
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-center">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <button id="switchOnBtn" class="btn btn-success control-button w-100" disabled>
+                                    <i class="bi bi-power fs-3 d-block"></i>
+                                    開啟
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button id="switchOffBtn" class="btn btn-danger control-button w-100" disabled>
+                                    <i class="bi bi-power fs-3 d-block"></i>
+                                    關閉
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-center">
+                            <div class="form-text">開關狀態: <span id="switchState" class="fw-semibold">未知</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="col-lg-4 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-graph-up me-2"></i>
+                            溫度統計
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-6 mb-3">
+                                <div class="bg-light rounded p-3">
+                                    <div class="fs-4 fw-bold text-primary" id="maxTemp">--</div>
+                                    <div class="small text-muted">最高溫度</div>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <div class="bg-light rounded p-3">
+                                    <div class="fs-4 fw-bold text-info" id="minTemp">--</div>
+                                    <div class="small text-muted">最低溫度</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="bg-light rounded p-3">
+                                    <div class="fs-4 fw-bold text-warning" id="avgTemp">--</div>
+                                    <div class="small text-muted">平均溫度</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="bg-light rounded p-3">
+                                    <div class="fs-4 fw-bold text-secondary" id="dataCount">0</div>
+                                    <div class="small text-muted">數據點數</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom Control Panel -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-terminal me-2"></i>
+                            自定義控制
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-8">
+                                <label for="customMessage" class="form-label fw-semibold">自定義訊息</label>
+                                <input type="text" class="form-control" id="customMessage" placeholder="輸入自定義控制訊息..." disabled>
+                            </div>
+                            <div class="col-md-2">
+                                <button id="sendCustomBtn" class="btn btn-outline-primary w-100" disabled>
+                                    <i class="bi bi-send me-1"></i>
+                                    發送
+                                </button>
+                            </div>
+                            <div class="col-md-2">
+                                <button id="clearLogBtn" class="btn btn-outline-secondary w-100">
+                                    <i class="bi bi-trash me-1"></i>
+                                    清除日誌
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <label class="form-label fw-semibold">控制日誌</label>
+                            <div id="controlLog" class="form-control bg-light" style="height: 100px; overflow-y: auto; font-family: monospace; font-size: 0.85rem;">
+                                系統就緒，等待連接...<br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Temperature Chart -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);">
+                        <h5 class="mb-0">
+                            <i class="bi bi-graph-up-arrow me-2"></i>
+                            溫度趨勢圖
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="temperatureChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Global variables
+        let mqttClient = null;
+        let temperatureData = [];
+        let temperatureChart = null;
+
+        // Initialize chart
+        function initChart() {
+            const ctx = document.getElementById('temperatureChart').getContext('2d');
+            temperatureChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: '溫度 (°C)',
+                        data: [],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#667eea',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            },
+                            title: {
+                                display: true,
+                                text: '溫度 (°C)',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            },
+                            title: {
+                                display: true,
+                                text: '時間',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 750,
+                        easing: 'easeInOutQuart'
+                    }
+                }
+            });
+        }
+
+        // Connect/Disconnect MQTT
+        document.getElementById('connectBtn').addEventListener('click', function() {
+            if (mqttClient && mqttClient.connected) {
+                disconnectMQTT();
+            } else {
+                connectMQTT();
+            }
+        });
+
+        // Connect to MQTT
+        function connectMQTT() {
+            const broker = document.getElementById('mqttBroker').value.trim();
+            const port = parseInt(document.getElementById('mqttPort').value);
+            const tempTopic = document.getElementById('tempTopic').value.trim();
+            
+            if (!broker || !port || !tempTopic) {
+                showAlert('請填寫完整的連接資訊', 'warning');
+                return;
+            }
+
+            const clientId = 'mqtt_dashboard_' + Math.random().toString(36).substr(2, 9);
+            const connectUrl = `wss://${broker}:${port}/mqtt`;
+            
+            updateConnectionStatus('connecting');
+            addLog('正在連接到 ' + broker + ':' + port + '...');
+
+            mqttClient = mqtt.connect(connectUrl, {
+                clientId: clientId,
+                clean: true,
+                connectTimeout: 10000,
+                keepalive: 60
+            });
+
+            mqttClient.on('connect', function() {
+                updateConnectionStatus('connected');
+                addLog('✅ 連接成功！');
+                
+                // Subscribe to temperature topic
+                mqttClient.subscribe(tempTopic, { qos: 1 }, function(err) {
+                    if (!err) {
+                        addLog('📡 已訂閱溫度主題: ' + tempTopic);
+                    } else {
+                        addLog('❌ 訂閱失敗: ' + err.message);
+                    }
+                });
+            });
+
+            mqttClient.on('message', function(topic, message) {
+                handleIncomingMessage(topic, message);
+            });
+
+            mqttClient.on('error', function(err) {
+                updateConnectionStatus('error');
+                addLog('❌ 連接錯誤: ' + err.message);
+                showAlert('連接失敗: ' + err.message, 'danger');
+            });
+
+            mqttClient.on('close', function() {
+                updateConnectionStatus('disconnected');
+                addLog('🔌 連接已斷開');
+            });
+        }
+
+        // Disconnect MQTT
+        function disconnectMQTT() {
+            if (mqttClient) {
+                mqttClient.end();
+                mqttClient = null;
+            }
+            updateConnectionStatus('disconnected');
+            addLog('🔌 已手動斷開連接');
+        }
+
+        // Handle incoming messages
+        function handleIncomingMessage(topic, message) {
+            try {
+                const msgStr = message.toString();
+                let temperature;
+
+                // Try to parse as JSON first
+                try {
+                    const jsonData = JSON.parse(msgStr);
+                    temperature = jsonData.temperature || jsonData.temp || jsonData.value || jsonData.t;
+                } catch (e) {
+                    // If not JSON, try to parse as number
+                    temperature = parseFloat(msgStr);
+                }
+
+                if (!isNaN(temperature)) {
+                    updateTemperatureDisplay(temperature);
+                    addLog('🌡️ 收到溫度數據: ' + temperature + '°C');
+                } else {
+                    addLog('⚠️ 無法解析溫度數據: ' + msgStr);
+                }
+            } catch (error) {
+                addLog('❌ 訊息處理錯誤: ' + error.message);
+            }
+        }
+
+        // Update temperature display
+        function updateTemperatureDisplay(temperature) {
+            // Update current temperature
+            document.getElementById('currentTemp').textContent = temperature.toFixed(1);
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+
+            // Update temperature status
+            const statusElement = document.getElementById('tempStatus');
+            if (temperature < 16) {
+                statusElement.className = 'badge bg-primary fs-6 px-3 py-2';
+                statusElement.textContent = '寒冷';
+            } else if (temperature < 22) {
+                statusElement.className = 'badge bg-info fs-6 px-3 py-2';
+                statusElement.textContent = '涼爽';
+            } else if (temperature < 26) {
+                statusElement.className = 'badge bg-success fs-6 px-3 py-2';
+                statusElement.textContent = '舒適';
+            } else if (temperature < 30) {
+                statusElement.className = 'badge bg-warning fs-6 px-3 py-2';
+                statusElement.textContent = '溫暖';
+            } else {
+                statusElement.className = 'badge bg-danger fs-6 px-3 py-2';
+                statusElement.textContent = '炎熱';
+            }
+
+            // Store data
+            const now = new Date();
+            temperatureData.push({
+                time: now,
+                value: temperature
+            });
+
+            // Keep only last 20 data points
+            if (temperatureData.length > 20) {
+                temperatureData.shift();
+            }
+
+            // Update statistics
+            updateStatistics();
+            
+            // Update chart
+            updateChart();
+        }
+
+        // Update statistics
+        function updateStatistics() {
+            if (temperatureData.length === 0) return;
+
+            const values = temperatureData.map(d => d.value);
+            const max = Math.max(...values);
+            const min = Math.min(...values);
+            const avg = values.reduce((a, b) => a + b, 0) / values.length;
+
+            document.getElementById('maxTemp').textContent = max.toFixed(1) + '°C';
+            document.getElementById('minTemp').textContent = min.toFixed(1) + '°C';
+            document.getElementById('avgTemp').textContent = avg.toFixed(1) + '°C';
+            document.getElementById('dataCount').textContent = temperatureData.length;
+        }
+
+        // Update chart
+        function updateChart() {
+            if (!temperatureChart) return;
+
+            const labels = temperatureData.map(d => {
+                return d.time.getHours().toString().padStart(2, '0') + ':' +
+                       d.time.getMinutes().toString().padStart(2, '0') + ':' +
+                       d.time.getSeconds().toString().padStart(2, '0');
+            });
+
+            const data = temperatureData.map(d => d.value);
+
+            temperatureChart.data.labels = labels;
+            temperatureChart.data.datasets[0].data = data;
+            temperatureChart.update('none');
+        }
+
+        // Control button handlers
+        document.getElementById('switchOnBtn').addEventListener('click', function() {
+            sendControlMessage('1');
+        });
+
+        document.getElementById('switchOffBtn').addEventListener('click', function() {
+            sendControlMessage('0');
+        });
+
+        document.getElementById('sendCustomBtn').addEventListener('click', function() {
+            const message = document.getElementById('customMessage').value.trim();
+            if (message) {
+                sendControlMessage(message);
+                document.getElementById('customMessage').value = '';
+            }
+        });
+
+        // Custom message input enter key
+        document.getElementById('customMessage').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('sendCustomBtn').click();
+            }
+        });
+
+        // Send control message
+        function sendControlMessage(command) {
+            if (!mqttClient || !mqttClient.connected) {
+                showAlert('請先連接到 MQTT Broker', 'warning');
+                return;
+            }
+
+            const controlTopic = document.getElementById('controlTopic').value.trim();
+            if (!controlTopic) {
+                showAlert('請設定控制主題', 'warning');
+                return;
+            }
+            const payload = {
+                command: command,
+                timestamp: new Date().toISOString(),
+                source: 'dashboard'
+            }; 
+            //const payload = command.toISOString(); // For simplicity, just send the command as string
+
+            mqttClient.publish(controlTopic, JSON.stringify(payload), { qos: 1 }, function(err) {
+                if (err) {
+                    addLog('❌ 發送失敗: ' + err.message);
+                    showAlert('發送失敗: ' + err.message, 'danger');
+                } else {
+                    addLog('📤 發送控制指令: ' + command);
+                    if (command === '1' || command === '0') {
+                        document.getElementById('switchState').textContent = command === '1' ? '開啟' : '關閉';
+                    }
+                    
+                    // Visual feedback
+                    const button = command === '1' ? document.getElementById('switchOnBtn') : 
+                                  command === '0' ? document.getElementById('switchOffBtn') : 
+                                  document.getElementById('sendCustomBtn');
+                    
+                    if (button) {
+                        const originalHTML = button.innerHTML;
+                        button.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>發送中...';
+                        button.disabled = true;
+                        
+                        setTimeout(() => {
+                            button.innerHTML = originalHTML;
+                            button.disabled = false;
+                        }, 1000);
+                    }
+                }
+            });
+        }
+
+        // Update connection status
+        function updateConnectionStatus(status) {
+            const indicator = document.getElementById('connectionIndicator');
+            const text = document.getElementById('connectionText');
+            const connectBtn = document.getElementById('connectBtn');
+            const controlButtons = ['switchOnBtn', 'switchOffBtn', 'sendCustomBtn', 'customMessage'];
+
+            switch (status) {
+                case 'connecting':
+                    indicator.className = 'status-indicator status-disconnected';
+                    text.textContent = '連接中...';
+                    connectBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>連接中...';
+                    connectBtn.disabled = true;
+                    break;
+                case 'connected':
+                    indicator.className = 'status-indicator status-connected';
+                    text.textContent = '已連接';
+                    connectBtn.innerHTML = '<i class="bi bi-plug-fill me-1"></i>斷開';
+                    connectBtn.disabled = false;
+                    connectBtn.className = 'btn btn-danger w-100 fw-semibold';
+                    controlButtons.forEach(id => {
+                        document.getElementById(id).disabled = false;
+                    });
+                    break;
+                case 'disconnected':
+                case 'error':
+                    indicator.className = 'status-indicator status-disconnected';
+                    text.textContent = '未連接';
+                    connectBtn.innerHTML = '<i class="bi bi-plug me-1"></i>連接';
+                    connectBtn.disabled = false;
+                    connectBtn.className = 'btn btn-primary w-100 fw-semibold';
+                    controlButtons.forEach(id => {
+                        document.getElementById(id).disabled = true;
+                    });
+                    document.getElementById('switchState').textContent = '未知';
+                    break;
+            }
+        }
+
+        // Add log entry
+        function addLog(message) {
+            const log = document.getElementById('controlLog');
+            const timestamp = new Date().toLocaleTimeString();
+            log.innerHTML += `[${timestamp}] ${message}<br>`;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        // Clear log
+        document.getElementById('clearLogBtn').addEventListener('click', function() {
+            document.getElementById('controlLog').innerHTML = '日誌已清除<br>';
+        });
+
+        // Show alert
+        function showAlert(message, type) {
+            // Create alert element
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(alertDiv);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initChart();
+            updateConnectionStatus('disconnected');
+            addLog('🚀 MQTT 控制台已啟動');
+            
+            // Start demo data if not connected after 5 seconds
+            setTimeout(() => {
+                if (!mqttClient || !mqttClient.connected) {
+                    startDemoMode();
+                }
+            }, 5000);
+        });
+
+        // Demo mode for testing
+        function startDemoMode() {
+            addLog('🎮 Demo 模式已啟動（每5秒生成模擬溫度數據）');
+            
+            function generateDemoData() {
+                if (!mqttClient || !mqttClient.connected) {
+                    const demoTemp = 20 + Math.random() * 15; // 20-35°C
+                    updateTemperatureDisplay(demoTemp);
+                    setTimeout(generateDemoData, 5000);
+                }
+            }
+            
+            generateDemoData();
+        }
+    </script>
+</body>
+</html>

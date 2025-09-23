@@ -82,10 +82,11 @@ def userinfo(request):
 
 # Create your views here.
 def votes(request):
-    data = Vote.objects.all()
-    # data = Vote.objects.all().order_by('name')
-    # return render(request, 'votes.html', locals())
-    return render(request, 'votes_table.html', locals())
+    # data = Vote.objects.all()
+    data = Vote.objects.all().order_by('name')
+    return render(request, 'votes.html', locals())
+    # return render(request, 'votes_table.html', locals())
+
 
 def plotly(request):
     data = Vote.objects.all()
@@ -101,7 +102,8 @@ def plotly(request):
 
 # 使用ploty來繪製溫度圖表
 def plotly_mqtt(request):
-    data = Temperature.objects.all().order_by('-id')[:20]
+    data = Temperature.objects.all().order_by('-id')[:10]
+    # data = Temperature.objects.all()
     x = [d.created_at for d in data]
     y = [d.temperature for d in data]
     trace = go.Scatter(x=x, y=y, name='溫度', mode='lines+markers')
@@ -112,29 +114,39 @@ def plotly_mqtt(request):
 
 @csrf_exempt
 def plotly_api(request):
-    #接收前端sendTemperatureToBackend(temperature), 
-    # 接收XMLHttpRequest()傳來的資料
-    print('request.body:', request.body)
-    # print('request.POST:', request.POST)
-    # print('request:', request)
-    if request.body :
-        
-
+    if request.body:
         data = json.loads(request.body.decode('utf-8'))
-        print('json data:', data)
-        # temperature = int(data['temperature'])
+        print(data)
         temperature = data['temperature']
-        
-    else : 
+    else:
         temperature = 0
-    print(temperature)
-    # 儲存溫度數據到資料庫
     temp = Temperature(temperature=temperature)
     temp.save()
-    print('溫度數據已儲存到資料庫')
-
     return HttpResponse(temperature)
     return render(request, 'mqtt.html', locals())
+
+# @csrf_exempt
+# def plotly_api(request):
+#     #接收前端sendTemperatureToBackend(temperature), 
+#     # 接收XMLHttpRequest()傳來的資料
+#     print('request.body:', request.body)
+#     # print('request.POST:', request.POST)
+#     # print('request:', request)
+#     if request.body :
+#         data = json.loads(request.body.decode('utf-8'))
+#         print('json data:', data)
+#         # temperature = int(data['temperature'])
+#         temperature = data['temperature']
+#     else : 
+#         temperature = 0
+#     print(temperature)
+#     # 儲存溫度數據到資料庫
+#     temp = Temperature(temperature=temperature)
+#     temp.save()
+#     print('溫度數據已儲存到資料庫')
+#     return HttpResponse(temperature)
+#     return render(request, 'mqtt.html', locals())
+
 
 def mqtt_show(request):
     return render(request, 'mqtt.html', locals())
