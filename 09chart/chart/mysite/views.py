@@ -84,7 +84,8 @@ def userinfo(request):
 def votes(request):
     data = Vote.objects.all()
     # data = Vote.objects.all().order_by('name')
-    return render(request, 'votes.html', locals())
+    # return render(request, 'votes.html', locals())
+    return render(request, 'votes_table.html', locals())
 
 def plotly(request):
     data = Vote.objects.all()
