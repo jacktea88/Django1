@@ -137,7 +137,9 @@ def userinfo(request):
     if request.user.is_authenticated:
         username = request.user.username
         try:
-            userinfo = User.objects.get(username=username)
+            user = User.objects.get(username=username)
+            userinfo = models.Profile.objects.get(user=user)    # 用profile增加user欄位，這樣可以把user額外的資訊帶出來
+            # userinfo = User.objects.get(username=username)     # 用auth內建的User欄位，沒有增加user欄位
             # userinfo = models.User.objects.get(username=username)
         except Exception as e:
             print(e)

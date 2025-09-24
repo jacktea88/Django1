@@ -14,7 +14,11 @@
     {% if userinfo %}
     您的姓名:{{ userinfo.name }}<br/>
     您的姓名 by auth:{{ userinfo.username }}<br/>
-    電子郵件:{{ userinfo.email }}
+    電子郵件:{{ userinfo.email }}<br/>
+    您的姓名 by User -> Profile:{{ userinfo.user.username }}<br/>
+    電子郵件 by User -> Profile:{{ userinfo.user.email }}<br/>
+    身高:{{ userinfo.height }} cm<br/>
+    性別:{{ userinfo.male | yesno:"男生,女生"}}<br/>
     {% endif %}
     
 </div>

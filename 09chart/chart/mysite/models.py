@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib import auth
 
 class User(models.Model):
     name = models.CharField(max_length=20, null=False)
@@ -8,6 +9,17 @@ class User(models.Model):
 
     def __str__(self):
         return self.name
+
+# create user profile
+class Profile(models.Model):
+    user = models.OneToOneField(auth.models.User, on_delete=models.CASCADE)
+    height = models.PositiveIntegerField(default=160)
+    male = models.BooleanField(default=False)
+    website = models.URLField()
+
+    def __str__(self):
+        return self.user.username
+
 
 # Create your models here.
 class Vote(models.Model):
