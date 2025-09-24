@@ -3,6 +3,12 @@ from mysite import models, forms
 from django.contrib.sessions.models import Session
 from django.contrib import messages
 
+# use django auth
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
+from django.contrib import auth
+from django.contrib.auth.decorators import login_required
+
 from mysite.models import Vote, Temperature
 from plotly.offline import plot
 import plotly.graph_objs as go
@@ -21,63 +27,121 @@ import json
 #     return render(request, 'index.html', locals())
 
 # 檢查'username'有沒有存在於Session中, 如果有就把username以及useremail都取出來
+# def index(request):
+#     if 'username' in request.session and request.session['username'] != None:
+#         username = request.session['username']
+#         useremail = request.session['useremail']
+#         print('username:in index', username)
+#     else:
+#         print('username不存在')
+#     return render(request, 'index.html', locals())
+
+#use django auth
 def index(request):
-    if 'username' in request.session and request.session['username'] != None:
-        username = request.session['username']
-        useremail = request.session['useremail']
+    if request.user.is_authenticated:
+        username = request.user.username
+        useremail = request.user.email
+        messages.get_messages(request)
         print('username:in index', username)
     else:
-        print('username不存在')
+        print('username不存在 by index')
     return render(request, 'index.html', locals())
 
+
+# def login(request):
+#     if request.method == 'POST':
+#         login_form = forms.LoginForm(request.POST)
+#         if login_form.is_valid():
+#             login_name=request.POST['username'].strip()
+#             login_password=request.POST['password']
+#             print('login_name:', login_name)
+#             try:
+#                 user = models.User.objects.get(name=login_name)
+#                 if user.password == login_password:
+#                     request.session['username'] = login_name
+#                     request.session['useremail'] = user.email
+#                     return redirect('/')
+#                 else:
+#                     # message = '密碼錯誤'
+#                     messages.warning(request, '密碼錯誤')
+#             except:
+#                 # message = '找不到使用者'
+#                 messages.warning(request, '找不到使用者')
+#         else:
+#             # message = '請檢查輸入的欄位內容'
+#             messages.warning(request, '請檢查輸入的欄位內容')
+#     else:   # GET
+#         login_form = forms.LoginForm()
+#     return render(request, 'login.html', locals())
+
+
+# use django auth
 def login(request):
     if request.method == 'POST':
         login_form = forms.LoginForm(request.POST)
         if login_form.is_valid():
             login_name=request.POST['username'].strip()
             login_password=request.POST['password']
-            print('login_name:', login_name)
-            try:
-                user = models.User.objects.get(name=login_name)
-                if user.password == login_password:
-                    request.session['username'] = login_name
-                    request.session['useremail'] = user.email
+            user = authenticate(username=login_name, password=login_password)
+            if user is not None:
+                if user.is_active:
+                    # login(request, user)
+                    auth.login(request, user)
+                    messages.warning(request, '成功登入了')
                     return redirect('/')
                 else:
-                    # message = '密碼錯誤'
-                    messages.warning(request, '密碼錯誤')
-            except:
-                # message = '找不到使用者'
-                messages.warning(request, '找不到使用者')
+                    messages.warning(request, '帳號尚未啟用')
+            else:
+                messages.warning(request, '登入失敗')
         else:
-            # message = '請檢查輸入的欄位內容'
             messages.warning(request, '請檢查輸入的欄位內容')
     else:   # GET
         login_form = forms.LoginForm()
     return render(request, 'login.html', locals())
 
-def logout(request):
-    if 'username' in request.session:
 
-        Session.objects.all().delete()
-        # 指定刪除的session寫法
-        # del request.session['username']
-        # del request.session['useremail']
+# def logout(request):
+#     if 'username' in request.session:
+
+#         Session.objects.all().delete()
+#         # 指定刪除的session寫法
+#         # del request.session['username']
+#         # del request.session['useremail']
+#     return redirect('/')
+
+# use django auth
+def logout(request):
+    auth.logout(request)
+    messages.warning(request, '成功登出了')
     return redirect('/')
 
+
+# def userinfo(request):
+#     if 'username' in request.session:
+#         username = request.session['username']
+#         useremail = request.session['useremail']
+#         print('username:in userinfo', username)
+#     else:
+#         print('username不存在')
+#         return redirect('/login/')
+#     try:
+#         userinfo = models.User.objects.get(name=username)
+#     except Exception as e:
+#         print(e)
+#         pass
+#     return render(request, 'userinfo.html', locals())
+
+# use django auth
+@login_required(login_url='/login/')
 def userinfo(request):
-    if 'username' in request.session:
-        username = request.session['username']
-        useremail = request.session['useremail']
-        print('username:in userinfo', username)
-    else:
-        print('username不存在')
-        return redirect('/login/')
-    try:
-        userinfo = models.User.objects.get(name=username)
-    except Exception as e:
-        print(e)
-        pass
+    if request.user.is_authenticated:
+        username = request.user.username
+        try:
+            userinfo = User.objects.get(username=username)
+            # userinfo = models.User.objects.get(username=username)
+        except Exception as e:
+            print(e)
+            pass
     return render(request, 'userinfo.html', locals())
 
 # Create your views here.
