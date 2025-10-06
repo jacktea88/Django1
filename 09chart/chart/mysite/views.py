@@ -178,6 +178,7 @@ def plotly_mqtt(request):
     temp_div = plot(fig, output_type='div')
     return render(request, 'temp.html', locals())
 
+# 接收溫度數據並儲存
 @csrf_exempt
 def plotly_api(request):
     if request.body:
@@ -214,5 +215,6 @@ def plotly_api(request):
 #     return render(request, 'mqtt.html', locals())
 
 
+# 啟動mqtt溫度資料傳送
 def mqtt_show(request):
     return render(request, 'mqtt.html', locals())
