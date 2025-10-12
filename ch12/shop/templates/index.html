@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class='container' align=center>
+    {% comment %} {% if message %}
+    <div class='alert alert-danger'>{{ message }}</div>
+    {% endif %} {% endcomment %}
+    {% for message in messages %}
+    <div class='alert alert-{{message.tags}}'>{{ message }}</div>
+    {% endfor %}
+    <h2>歡迎光臨我的網站!!</h2>
+    {% if username %}登入成功，歡迎您,{{ username }}
+    {% else %}
+    登入錯誤
+    {% endif %}
+    <div class='row'>
+        <div class='col-md-12'>
+            {% if request.session.cart.items|length > 0 %} 
+            <p>目前購物車中共有 {{ request.session.cart.items | length }} 項產品</p> 
+            {% for id, item in request.session.cart.items %}
+            <p>{{ item.name }} {{ item.quantity }} 個</p>
+            {% endfor %}
+            {% if user.is_authenticated %} 
+            {% comment %} <p><a href='{% url "order-url" %}'>結帳</a></p> {% endcomment %}
+            <button class='btn btn-warning'><a href='/cart'>購物車內容</a></button> 
+            {% else %} <p><a href='{% url "login" %}'>登入</a> 後即可結帳</p>
+            {% endif %}
+            {% else %} 
+            <p>此購物車為空</p>
+            {% endif %}
+        </div>
+        {% for product in all_products %}
+        <div class='col-md-3'>
+            {% comment %} <img src='{{ product.image }}'> {% endcomment %}
+            <img src="{{ product.image.url }}" alt="無圖片">
+            <p>
+                <a href='{% url "product-url" product.id %}'>{{ product.name }}</a><br>
+                <a href="http://127.0.0.1:8000{{ product.image.url }}">圖片連結</a>
+            </p>
+            {{ product.name }}<br>
+            {{ product.price }}<br>
+            {{ product.description }}
+            <br>
+            {% if user.is_authenticated %}
+                <button class='btn btn-info' {{ product.stock | yesno:",disabled"}}>
+                    <a href='{% url "additem-url" product.id 1 %}'>放入購物車</a>
+            <!--                cart/additem/<int:id>/<int:quantity>/  所以1是quantity -->
+                </button>
+            {% endif %}
+        </div>
+            
+        {% endfor %}
+
+    </div>
+
+</div>
+{% endblock content %}

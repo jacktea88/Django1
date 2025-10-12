@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class='container' align=center>
+    {% for message in messages %}
+    <div class='alert alert-{{message.tags}}'>{{ message }}</div>
+    {% endfor %}
+    <h2>歡迎光臨我的網站</h2>
+    {% if username %}登入成功，歡迎您,{{ username }}
+    {% else %}
+    登入錯誤
+    {% endif %}
+    <p>
+        您的姓名是:{{ userinfo.name }}<br>
+        您的姓名是by auth:{{ userinfo.username }}<br>
+        您的電子郵件是:{{ userinfo.email }}
+        <br>
+        <hr>
+        以下是擴充用戶額外資訊: by User -> Profile:<br>
+        您的姓名是:{{ userinfo.user.username }}<br>
+        您的電子郵件是:{{ userinfo.user.email }}<br>
+        您的身高是:{{ userinfo.height }} cm<br>
+        您的性別是:{{ userinfo.male | yesno:"男生,女生"}}
+    </p>
+
+</div>
+{% endblock content %}

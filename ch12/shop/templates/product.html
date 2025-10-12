@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class='container' align=center>
+    {% for message in messages %}
+    <div class='alert alert-{{message.tags}}'>{{ message }}</div>
+    {% endfor %}
+    {% if username %}登入成功，歡迎您,{{ username }}
+    {% else %}
+    登入錯誤
+    {% endif %}
+    <h2>{{ product.name }}</h2>
+    <a href="{% url 'product-url' product.id %}"><img src="{{ product.image.url }}" alt="無圖片"></a>
+    <p>
+        售價:{{ product.price }}<br>
+        庫存:{{ product.stock }}<br>
+        細節:{{ product.description }}
+        <br>
+        <hr>
+        
+    </p>
+
+</div>
+{% endblock content %}

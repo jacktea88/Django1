@@ -1,0 +1,104 @@
+{% block header %}
+
+
+    <!-- Header區塊 -->
+    
+        <!-- templates/header.html -->
+<header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <div class="container">
+            <!-- Logo/品牌名稱 -->
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <i class="bi bi-globe2 me-2 text-primary"></i>
+                我的網站
+            </a>
+
+            <!-- 手機版選單切換按鈕 -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- 導航選單 -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/votes/">
+                            <i class="bi bi-house-door me-1"></i>投票結果
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/plotly/">
+                            <i class="bi bi-house-door me-1"></i>plotly
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/userinfo/">
+                            <i class="bi bi-house-door me-1"></i>user info
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/mqtt/">
+                            <i class="bi bi-house-door me-1"></i>mqtt
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/temp/">
+                            <i class="bi bi-house-door me-1"></i>溫度數據
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout/">
+                            <i class="bi bi-info-circle me-1"></i>登出
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/login/?next=/">
+                        {% comment %} <a class="nav-link" href="/admin/login/"> {% endcomment %}
+                            <i class="bi bi-info-circle me-1"></i>django登入
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="servicesDropdown" role="button" 
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-gear me-1"></i>留言板2
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="servicesDropdown">
+                            <li><a class="dropdown-item" href="/services/">model結合表單混合方式</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/post2db/">張貼</a></li>
+                            <li><a class="dropdown-item" href="#">post列表</a></li>
+                            <li><a class="dropdown-item" href="#">post詳細</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact/">
+                            <i class="bi bi-envelope me-1"></i>聯絡我們
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- 使用者狀態區域 -->
+                <div class="user-info">
+                    
+                        <!-- 未登入使用者 -->
+                        <div class="d-flex gap-2">
+                            <a href="/login/" class="btn btn-outline-primary">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>登入
+                            </a>
+                            <a href="/accounts/register/" class="btn btn-primary">
+                                <i class="bi bi-person-plus me-1"></i>註冊
+                            </a>
+                        </div>
+                    
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 麵包屑導航（可選） -->
+    
+    
+    
+</header>
+{% endblock header %}

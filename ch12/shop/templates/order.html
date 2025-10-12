@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% load cart_tag %}
+
+{% block content %}
+
+<div class='container' align=center>
+    {% for message in messages %}
+    <div class='alert alert-{{message.tags}}'>{{ message }}</div>
+    {% endfor %}
+    {% if username %}登入成功，歡迎您,{{ username }}
+    {% else %}
+    登入錯誤
+    {% endif %}
+    <h2>購物車</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">商品</th>
+                <th scope="col">單價</th>
+                <th scope="col">數量</th>
+                <th scope="col">小計</th>
+                <th scope="col">刪除</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for id, item in cart.items %}
+            <tr>
+                <td>{{ item.name }}</td>
+                <td>{{ item.price }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.price|multiply:item.quantity }}</td>
+                <td>
+                    <a href='{% url "removeitem-url" id %}'>刪除</a>
+                </td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="3">總計</td>
+                <td>{{ total_price }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <form action="." method="post">
+        {% csrf_token %}
+        <table>
+
+            {{ form.as_table }}
+        </table>
+        <input type="submit" value="下訂單">
+        
+    </form>
+    <hr>
+    <button class='btn btn-warning'><a href='/'>回首頁</button>
+    <button class='btn btn-warning'><a href='/cart'>回購物車</button>
+
+    {% comment %} <button class='btn btn-warning'><a href='/order'>我要訂購</button> {% endcomment %}
+
+</div>
+{% endblock content %}
